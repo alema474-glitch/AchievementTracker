@@ -1,0 +1,480 @@
+// ── Page ──────────────────────────────────────────────────────────────────────
+.details-page {
+  padding: 0 0 60px;
+  max-width: 100%;
+  color: var(--fg, #fff);
+  font-family: 'DM Sans', sans-serif;
+
+  @media (max-width: 767.98px) {
+    padding-bottom: 80px;
+  }
+}
+
+// ── Hero ──────────────────────────────────────────────────────────────────────
+.hero-wrap {
+  position: relative;
+  height: 52vh;
+  min-height: 280px;
+  max-height: 480px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 24px;
+
+  @media (max-width: 767.98px) {
+    height: 45vw;
+    min-height: 220px;
+    border-radius: 16px;
+  }
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.55);
+  transition: filter 0.3s;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(18,18,18,0.96) 0%, rgba(18,18,18,0.3) 50%, transparent 100%),
+    linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 30%);
+}
+
+// Hero top bar
+.hero-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(18,18,18,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 99px;
+  padding: 8px 16px;
+  color: rgba(255,255,255,0.7);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  backdrop-filter: blur(8px);
+
+  i { font-size: 0.85rem; }
+
+  &:hover {
+    background: rgba(79,123,255,0.15);
+    border-color: rgba(79,123,255,0.35);
+    color: var(--accent-soft, rgb(133,160,239));
+  }
+}
+
+.trophy-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(18,18,18,0.6);
+  border: 1px solid rgba(245,197,66,0.25);
+  border-radius: 99px;
+  padding: 8px 16px;
+  color: #f5c542;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(8px);
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    background: rgba(245,197,66,0.12);
+    border-color: rgba(245,197,66,0.45);
+    box-shadow: 0 0 16px rgba(245,197,66,0.15);
+  }
+}
+
+.trophy-count {
+  letter-spacing: 0.04em;
+}
+
+// Hero bottom
+.hero-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: 0.04em;
+  color: var(--fg, #fff);
+  margin: 0;
+  line-height: 1;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+
+.hero-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 300px;
+}
+
+.hp-bar-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.hp-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.4);
+  transition: width 1s ease;
+
+  &.fill-high { background: linear-gradient(90deg, #f5c542, #fde68a); }
+  &.fill-mid  { background: linear-gradient(90deg, var(--accent, rgb(79,123,255)), var(--accent-soft, rgb(133,160,239))); }
+}
+
+.hp-pct {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+// ── Description card ──────────────────────────────────────────────────────────
+.desc-card {
+  background: var(--surface-2, rgb(30,30,30));
+  border: 1px solid var(--border-soft, rgba(255,255,255,0.06));
+  border-radius: 18px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.desc-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-soft, rgb(133,160,239));
+  margin-bottom: 12px;
+
+  i { font-size: 0.8rem; }
+}
+
+.desc-text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--fg-muted, rgba(255,255,255,0.45));
+  margin: 0;
+}
+
+// ── Stats row ─────────────────────────────────────────────────────────────────
+.stats-row {
+  display: flex;
+  align-items: center;
+  background: var(--surface-2, rgb(30,30,30));
+  border: 1px solid var(--border-soft, rgba(255,255,255,0.06));
+  border-radius: 18px;
+  padding: 18px 24px;
+  gap: 0;
+}
+
+.stat-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: var(--fg-muted, rgba(255,255,255,0.45));
+
+  &.stat-accent { color: var(--accent-soft, rgb(133,160,239)); }
+  &.stat-total  { color: var(--fg-faint, rgba(255,255,255,0.2)); }
+}
+
+.stat-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-faint, rgba(255,255,255,0.2));
+}
+
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border-soft, rgba(255,255,255,0.06));
+}
+
+// ── Offcanvas Logros ──────────────────────────────────────────────────────────
+.offcanvas-logros {
+  background: var(--surface, rgb(24,24,24));
+  border-top: 1px solid var(--border-soft, rgba(255,255,255,0.06));
+  border-radius: 22px 22px 0 0;
+  height: 70vh;
+  max-height: 600px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 15%; right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent, rgb(79,123,255)), transparent);
+    opacity: 0.4;
+  }
+
+  @media (max-width: 767.98px) {
+    height: 85vh;
+  }
+}
+
+.offcanvas-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 20px 0;
+  position: relative;
+}
+
+.offcanvas-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--fg-faint, rgba(255,255,255,0.2));
+  border-radius: 99px;
+  align-self: center;
+}
+
+.oc-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.oc-icon {
+  width: 34px;
+  height: 34px;
+  background: rgba(245,197,66,0.1);
+  border: 1px solid rgba(245,197,66,0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f5c542;
+  font-size: 0.9rem;
+}
+
+.oc-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  color: var(--fg, #fff);
+  margin: 0;
+  flex: 1;
+}
+
+.oc-count {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-soft, rgb(133,160,239));
+  background: var(--accent-dim, rgba(79,123,255,0.08));
+  border: 1px solid var(--border, rgba(79,123,255,0.13));
+  border-radius: 99px;
+  padding: 3px 10px;
+}
+
+.btn-close-custom {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  background: var(--surface-3, rgb(38,38,38));
+  border: 1px solid var(--border-soft, rgba(255,255,255,0.06));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-muted, rgba(255,255,255,0.45));
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  font-size: 0.78rem;
+
+  &:hover { color: var(--fg, #fff); background: var(--surface-2, rgb(30,30,30)); }
+}
+
+// Offcanvas progress bar
+.oc-progress {
+  padding: 14px 20px 0;
+}
+
+.ocp-track {
+  height: 3px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.ocp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent, rgb(79,123,255)), var(--accent-soft, rgb(133,160,239)));
+  border-radius: 99px;
+  transition: width 0.8s ease;
+}
+
+.offcanvas-body {
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: var(--surface-3, rgb(38,38,38)); border-radius: 4px; }
+}
+
+// ── Logros list ───────────────────────────────────────────────────────────────
+.logros-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.logro-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  background: var(--surface-2, rgb(30,30,30));
+  border: 1px solid var(--border-soft, rgba(255,255,255,0.06));
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  user-select: none;
+
+  &:hover {
+    background: var(--surface-3, rgb(38,38,38));
+    transform: translateX(2px);
+  }
+
+  &.conseguido {
+    background: rgba(79,123,255,0.06);
+    border-color: var(--border, rgba(79,123,255,0.13));
+
+    .logro-name { color: var(--fg, #fff); }
+    .logro-trophy { color: #f5c542; font-size: 1.3rem; }
+  }
+}
+
+.logro-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--surface-3, rgb(38,38,38));
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s;
+
+  &.active {
+    background: var(--accent, rgb(79,123,255));
+    border-color: var(--accent, rgb(79,123,255));
+    box-shadow: 0 0 8px var(--accent-glow, rgba(79,123,255,0.25));
+  }
+}
+
+.logro-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.logro-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--fg-muted, rgba(255,255,255,0.45));
+  transition: color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logro-hint {
+  font-size: 0.7rem;
+  color: var(--fg-faint, rgba(255,255,255,0.2));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logro-trophy {
+  font-size: 1.1rem;
+  color: var(--fg-faint, rgba(255,255,255,0.2));
+  flex-shrink: 0;
+  transition: color 0.2s, font-size 0.2s;
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(245,197,66,0.08);
+  border: 1px solid rgba(245,197,66,0.15);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: rgba(245,197,66,0.3);
+}
+
+.empty-text {
+  font-size: 0.83rem;
+  color: var(--fg-muted, rgba(255,255,255,0.45));
+  font-style: italic;
+  margin: 0;
+}

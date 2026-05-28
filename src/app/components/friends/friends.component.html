@@ -1,0 +1,184 @@
+<div class="friends-page">
+
+  <div class="page-header">
+    <div class="page-header-text">
+      <p class="page-eyebrow"><span class="eyebrow-dot"></span>Social</p>
+      <h1 class="page-title">Mis <span class="title-accent">Amigos</span></h1>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn" [class.active]="activeTab() === 'friends'" (click)="activeTab.set('friends')">
+      <i class="bi bi-people-fill"></i> Amigos
+      @if (friends().length > 0) {
+        <span class="tab-count">{{ friends().length }}</span>
+      }
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'search'" (click)="activeTab.set('search')">
+      <i class="bi bi-search"></i> Buscar
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'requests'" (click)="activeTab.set('requests')">
+      <i class="bi bi-person-plus-fill"></i> Solicitudes
+      @if (requestCount() > 0) {
+        <span class="tab-count tab-count--alert">{{ requestCount() }}</span>
+      }
+    </button>
+  </div>
+
+  <!-- ── FRIENDS TAB ──────────────────────────────────── -->
+  @if (activeTab() === 'friends') {
+    @if (loadingFriends()) {
+      <div class="loading-state">
+        <div class="spinner-ring"></div><span>Cargando amigos…</span>
+      </div>
+    } @else if (friends().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-people"></i></div>
+        <h3>Aún no tienes amigos</h3>
+        <p>Busca jugadores por su username y añádelos</p>
+        <button class="btn-primary" (click)="activeTab.set('search')">
+          <i class="bi bi-search"></i> Buscar jugadores
+        </button>
+      </div>
+    } @else {
+      <div class="friends-grid">
+        @for (friend of friends(); track friend.uid) {
+          <div class="friend-card">
+            <div class="fc-avatar-wrap">
+              @if (friend.photoURL) {
+                <img [src]="friend.photoURL" [alt]="friend.username" class="fc-avatar" />
+              } @else {
+                <div class="fc-avatar-placeholder">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+              }
+              <span class="fc-status-dot"></span>
+            </div>
+            <div class="fc-info">
+              <span class="fc-username">{{ friend.username }}</span>
+              <span class="fc-name">{{ friend.firstName }} {{ friend.lastName }}</span>
+              <span class="fc-since">Amigos desde {{ friend.since | date:'MMM yyyy' }}</span>
+            </div>
+            <div class="fc-actions">
+              <a [routerLink]="['/nav/friends/profile', friend.uid]" class="fc-btn fc-btn--view">
+                <i class="bi bi-person-lines-fill"></i>
+              </a>
+              <a [routerLink]="['/nav/friends/compare', friend.uid]" class="fc-btn fc-btn--compare">
+                <i class="bi bi-bar-chart-line-fill"></i>
+              </a>
+              <a [routerLink]="['/nav/friends/chat', friend.uid]" class="fc-btn fc-btn--chat">
+                <i class="bi bi-chat-dots-fill"></i>
+              </a>
+              <button class="fc-btn fc-btn--remove" (click)="removeFriend(friend.uid)">
+                <i class="bi bi-person-dash-fill"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- ── SEARCH TAB ───────────────────────────────────── -->
+  @if (activeTab() === 'search') {
+    <div class="search-bar-wrap">
+      <div class="search-input-wrap">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Buscar por username…"
+          [value]="searchQuery()"
+          (input)="onSearch($any($event.target).value)"
+        />
+        @if (loadingSearch()) {
+          <div class="search-spinner"></div>
+        }
+      </div>
+    </div>
+
+    @if (searchQuery().length > 0 && searchQuery().length < 2) {
+      <p class="search-hint">Escribe al menos 2 caracteres</p>
+    }
+
+    @if (searchResults().length > 0) {
+      <div class="search-results">
+        @for (user of searchResults(); track user.uid) {
+          <div class="user-result-card">
+            <div class="urc-avatar">
+              @if (user.photoURL) {
+                <img [src]="user.photoURL" [alt]="user.username" />
+              } @else {
+                <div class="urc-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+              }
+            </div>
+            <div class="urc-info">
+              <span class="urc-username">{{ user.username }}</span>
+              <span class="urc-name">{{ user.firstName }} {{ user.lastName }}</span>
+            </div>
+            <div class="urc-actions">
+              @if (isFriend(user.uid)) {
+                <span class="urc-badge urc-badge--friend"><i class="bi bi-check-lg"></i> Amigo</span>
+              } @else if (sentTo().has(user.uid)) {
+                <span class="urc-badge urc-badge--sent"><i class="bi bi-clock"></i> Enviado</span>
+              } @else {
+                <button
+                  class="btn-add-friend"
+                  [disabled]="sendingTo() === user.uid"
+                  (click)="sendRequest(user.uid, user.username)">
+                  @if (sendingTo() === user.uid) {
+                    <span class="btn-spinner"></span>
+                  } @else {
+                    <i class="bi bi-person-plus-fill"></i>
+                  }
+                  Añadir
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (searchQuery().length >= 2 && !loadingSearch()) {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-person-x"></i></div>
+        <h3>Sin resultados</h3>
+        <p>No se encontró ningún usuario con ese nombre</p>
+      </div>
+    }
+  }
+
+  <!-- ── REQUESTS TAB ──────────────────────────────────── -->
+  @if (activeTab() === 'requests') {
+    @if (requests().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+        <h3>Sin solicitudes pendientes</h3>
+        <p>Cuando alguien te añada como amigo aparecerá aquí</p>
+      </div>
+    } @else {
+      <div class="requests-list">
+        @for (req of requests(); track req.fromUid) {
+          <div class="request-card">
+            <div class="rc-avatar-placeholder">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="rc-info">
+              <span class="rc-username">{{ req.fromUsername }}</span>
+              <span class="rc-date">{{ req.createdAt | date:'d MMM yyyy' }}</span>
+            </div>
+            <div class="rc-actions">
+              <button class="rc-btn rc-btn--accept" (click)="acceptRequest(req.fromUid)">
+                <i class="bi bi-check-lg"></i> Aceptar
+              </button>
+              <button class="rc-btn rc-btn--reject" (click)="rejectRequest(req.fromUid)">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+</div>

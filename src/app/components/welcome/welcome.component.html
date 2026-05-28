@@ -1,0 +1,126 @@
+<!-- Background Scene -->
+<div class="scene">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="wave-ring"></div>
+  <div class="wave-ring"></div>
+  <div class="wave-ring"></div>
+
+  <!-- Floating particles -->
+  <div
+    *ngFor="let p of particles"
+    class="particle"
+    [ngStyle]="{
+      left: p.left + 'vw',
+      width: p.width + 'px',
+      height: p.height + 'px',
+      animationDuration: p.duration + 's',
+      animationDelay: p.delay + 's'
+    }">
+  </div>
+</div>
+
+<!-- Main page layout -->
+<div class="page">
+
+  <div class="eyebrow">
+    <span class="dot"></span>
+    Sigue · Logra · Evoluciona
+  </div>
+
+  <h1 class="headline">
+    Achievement
+    <span class="line-accent">Tracker</span>
+  </h1>
+
+  <p class="subtext">
+    Desbloquea tu potencial. Registra cada logro, visualiza tu crecimiento y mantén una constancia inquebrantable.
+  </p>
+
+  <div class="btn-group-custom">
+    <a routerLink="/login" class="btn-primary-custom">
+      <i class="bi bi-box-arrow-in-right"></i>
+      Log In
+    </a>
+    <a routerLink="/signin" class="btn-ghost-custom">
+      <i class="bi bi-person-plus"></i>
+      Sign Up
+    </a>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Explora
+  </div>
+
+</div>
+
+<!-- Right panel -->
+<div class="right-panel">
+  <div class="feat-card">
+    <div class="feat-icon"><i class="bi bi-trophy"></i></div>
+    <div>
+      <div class="feat-title">Rachas</div>
+      <div class="feat-desc">Mantén la constancia con las recompensas por racha diaria.</div>
+    </div>
+  </div>
+
+  <div class="feat-card">
+    <div class="feat-icon"><i class="bi bi-graph-up-arrow"></i></div>
+    <div>
+      <div class="feat-title">Progreso</div>
+      <div class="feat-desc">Análisis visual de todos tus hitos.</div>
+    </div>
+  </div>
+
+  <div class="feat-card">
+    <div class="feat-icon"><i class="bi bi-lightning-charge"></i></div>
+    <div>
+      <div class="feat-title">Registro rápido</div>
+      <div class="feat-desc">Marca tus logros en menos de 10 segundos</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Floating particles ──────────────────────────────
+  const scene = document.querySelector('.scene');
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+        left: ${Math.random() * 100}vw;
+        bottom: -10px;
+        width: ${Math.random() * 3 + 1}px;
+        height: ${Math.random() * 3 + 1}px;
+        animation-duration: ${Math.random() * 20 + 12}s;
+        animation-delay: ${Math.random() * 15}s;
+        opacity: 0;
+      `;
+    scene.appendChild(p);
+  }
+
+  // ── Counter animation ──────────────────────────────
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target, 10);
+    const duration = 1800;
+    const step = Math.ceil(target / (duration / 16));
+    let current = 0;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = current.toLocaleString();
+      if (current >= target) clearInterval(timer);
+    }, 16);
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animateCounter(e.target);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('[data-target]').forEach(el => observer.observe(el));
+</script>

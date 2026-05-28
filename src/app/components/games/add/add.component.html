@@ -1,0 +1,141 @@
+<div class="add-page">
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════ -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="header-eyebrow">
+        <span class="eyebrow-dot"></span>
+        Catálogo global
+      </p>
+      <h1 class="page-title">
+        Añadir Juego
+        <span class="title-count" *ngIf="juegosFiltrados.length > 0">{{ juegosFiltrados.length }}</span>
+      </h1>
+    </div>
+
+    <div class="header-actions">
+      <div class="search-wrap">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          id="input"
+          class="search-input"
+          placeholder="Buscar juego..."
+          (keyup)="mostrarTexto($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       GRID
+  ══════════════════════════════════════════ -->
+  <div class="games-grid" *ngIf="juegosFiltrados.length > 0">
+    <div
+      class="game-card"
+      *ngFor="let juego of juegosFiltrados"
+      data-bs-toggle="modal"
+      data-bs-target="#addGameModal"
+      (click)="seleccionarJuego(juego)">
+
+      <div class="game-img-wrap">
+        <img [src]="juego.image" [alt]="'Portada de ' + juego.name" class="game-img" />
+        <div class="game-img-overlay"></div>
+        <div class="add-hover-icon">
+          <i class="bi bi-plus-lg"></i>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <h3 class="game-title">{{ juego.name }}</h3>
+        <span class="add-hint">Toca para añadir</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="juegosFiltrados.length === 0">
+    <div class="empty-icon"><i class="bi bi-controller"></i></div>
+    <h3 class="empty-title">Sin resultados</h3>
+    <p class="empty-desc">No se encontraron juegos con ese nombre.</p>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL — Confirmar añadir
+══════════════════════════════════════════ -->
+<div class="modal fade" id="addGameModal" tabindex="-1" aria-labelledby="addGameModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-custom">
+
+      <!-- Header -->
+      <div class="modal-header-custom">
+        <div class="modal-handle"></div>
+        <div class="modal-title-row">
+          <span class="modal-icon"><i class="bi bi-plus-circle"></i></span>
+          <h5 id="addGameModalLabel" class="modal-title-custom">Añadir a biblioteca</h5>
+        </div>
+        <button type="button" class="modal-close-btn" data-bs-dismiss="modal">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body-custom" *ngIf="juegoSeleccionado">
+
+        <!-- Imagen del juego -->
+        <div class="modal-game-preview">
+          <img [src]="juegoSeleccionado.image" [alt]="juegoSeleccionado.name" class="modal-game-img" />
+          <div class="modal-game-overlay"></div>
+          <div class="modal-game-name-overlay">{{ juegoSeleccionado.name }}</div>
+        </div>
+
+        <p class="modal-confirm-text">
+          ¿Añadir <strong>{{ juegoSeleccionado.name }}</strong> a tu biblioteca?
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer-custom">
+        <button type="button" class="modal-cancel-btn" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="button" class="modal-confirm-btn" data-bs-dismiss="modal" (click)="confirmarAgregar()">
+          <i class="bi bi-plus-lg"></i>
+          Añadir
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TOAST — Feedback añadir juego
+══════════════════════════════════════════ -->
+@if (toast) {
+  <div class="add-toast" [class.toast-success]="toast.tipo === 'success'" [class.toast-error]="toast.tipo === 'error'">
+    <div class="add-toast-progress"></div>
+
+    <div class="add-toast-eyebrow">
+      <span class="add-toast-dot"></span>
+      <span class="add-toast-label">{{ toast.tipo === 'success' ? 'Biblioteca' : 'Error' }}</span>
+    </div>
+
+    <div class="add-toast-main">
+      <div class="add-toast-icon-wrap">
+        <span class="add-toast-icon">
+          {{ toast.tipo === 'success' ? '🎮' : '⚠️' }}
+        </span>
+        <div class="add-toast-glow"></div>
+      </div>
+      <div class="add-toast-body">
+        <p class="add-toast-title">{{ toast.nombre }}</p>
+        <p class="add-toast-desc">{{ toast.mensaje }}</p>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,102 @@
+<div class="medals-page">
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════ -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="header-eyebrow">
+        <span class="eyebrow-dot"></span>
+        Logros especiales
+      </p>
+      <h1 class="page-title">
+        Insignias
+        <span class="title-count" *ngIf="insignias.length > 0">
+          {{ conseguidasCount }} / {{ insignias.length }}
+        </span>
+      </h1>
+    </div>
+
+    <!-- Mini progress bar global de insignias -->
+    <div class="medals-global-progress" *ngIf="insignias.length > 0">
+      <div class="mgp-labels">
+        <span class="mgp-label">Progreso</span>
+        <span class="mgp-pct">{{ conseguidasCount * 100 / insignias.length | number:'1.0-0' }}%</span>
+      </div>
+      <div class="mgp-track">
+        <div class="mgp-fill" [style.width.%]="conseguidasCount * 100 / insignias.length"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FILTRO RÁPIDO
+  ══════════════════════════════════════════ -->
+  <div class="quick-filters">
+    <button class="qf-btn" [class.active]="filtroActivo === 'todas'" (click)="filtroActivo = 'todas'">
+      Todas
+    </button>
+    <button class="qf-btn" [class.active]="filtroActivo === 'conseguidas'" (click)="filtroActivo = 'conseguidas'">
+      <i class="bi bi-check-circle-fill"></i>
+      Conseguidas
+    </button>
+    <button class="qf-btn" [class.active]="filtroActivo === 'bloqueadas'" (click)="filtroActivo = 'bloqueadas'">
+      <i class="bi bi-lock-fill"></i>
+      Bloqueadas
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       GRID de insignias
+  ══════════════════════════════════════════ -->
+  <div class="medals-grid">
+    <ng-container *ngFor="let insignia of insignias">
+      <div
+        class="medal-card"
+        *ngIf="filtroActivo === 'todas' || (filtroActivo === 'conseguidas' && insignia.conseguido) || (filtroActivo === 'bloqueadas' && !insignia.conseguido)"
+        [class.unlocked]="insignia.conseguido"
+        [class.locked]="!insignia.conseguido">
+
+        <!-- Imagen -->
+        <div class="medal-img-wrap">
+          <img
+            [src]="insignia.medal.imagen"
+            [alt]="'Insignia: ' + insignia.medal.titulo"
+            class="medal-img"
+            [class.grayscale]="!insignia.conseguido"
+          />
+          <!-- Candado overlay si bloqueada -->
+          <div class="medal-lock-overlay" *ngIf="!insignia.conseguido">
+            <i class="bi bi-lock-fill"></i>
+          </div>
+          <!-- Check overlay si conseguida -->
+          <div class="medal-check-overlay" *ngIf="insignia.conseguido">
+            <i class="bi bi-check-lg"></i>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="medal-body">
+          <h4 class="medal-title">{{ insignia.medal.titulo }}</h4>
+          <p class="medal-desc">{{ insignia.medal.descripcion }}</p>
+
+          <div class="medal-footer">
+            <span class="medal-status-badge" [class.badge-unlocked]="insignia.conseguido" [class.badge-locked]="!insignia.conseguido">
+              <i class="bi" [class.bi-check-circle-fill]="insignia.conseguido" [class.bi-lock-fill]="!insignia.conseguido"></i>
+              {{ insignia.conseguido ? 'Conseguida' : 'Bloqueada' }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="insignias.length === 0">
+    <div class="empty-icon"><i class="bi bi-award"></i></div>
+    <h3 class="empty-title">Sin insignias</h3>
+    <p class="empty-desc">Las insignias aparecerán aquí cuando las desbloquees.</p>
+  </div>
+
+</div>

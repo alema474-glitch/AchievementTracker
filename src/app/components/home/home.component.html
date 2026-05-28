@@ -1,0 +1,172 @@
+<div class="home-page">
+
+  <!-- ══════════════════════════════════════════
+       HEADER — Bienvenida + barra de progreso global
+  ══════════════════════════════════════════ -->
+  <section class="home-header">
+    <div class="header-text">
+      <p class="header-eyebrow">
+        <span class="eyebrow-dot"></span>
+        Panel de control
+      </p>
+      <h1 class="header-title">Progreso<br><span class="title-accent">Global</span></h1>
+    </div>
+
+    <div class="global-progress-card">
+      <div class="gp-top">
+        <span class="gp-label">Logros totales</span>
+        <span class="gp-count">
+          <span class="gp-done">{{ logrosConseguidos }}</span>
+          <span class="gp-sep">/</span>
+          <span class="gp-total">{{ totalLogros }}</span>
+        </span>
+      </div>
+
+      <div class="gp-bar-track">
+        <div class="gp-bar-fill" [style.width.%]="progresoTotal">
+          <span class="gp-bar-glow"></span>
+        </div>
+      </div>
+
+      <div class="gp-bottom">
+        <span class="gp-pct">{{ progresoTotal | number:'1.0-0' }}% completado</span>
+        <span class="gp-stars">
+          <i class="bi bi-star-fill" [class.active]="progresoTotal >= 25"></i>
+          <i class="bi bi-star-fill" [class.active]="progresoTotal >= 50"></i>
+          <i class="bi bi-star-fill" [class.active]="progresoTotal >= 75"></i>
+          <i class="bi bi-star-fill" [class.active]="progresoTotal >= 100"></i>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SECCIÓN: MEJORES JUEGOS (≥90%)
+  ══════════════════════════════════════════ -->
+  <section class="home-section">
+    <div class="section-header">
+      <div class="section-title-group">
+        <span class="section-icon section-icon--gold"><i class="bi bi-trophy-fill"></i></span>
+        <h2 class="section-title">Mejores Juegos</h2>
+      </div>
+      <span class="section-badge" *ngIf="juegosDestacados.length > 0">{{ juegosDestacados.length }}</span>
+    </div>
+
+    <div class="games-grid" *ngIf="juegosDestacados.length > 0">
+      <div class="game-card" *ngFor="let juego of juegosDestacados">
+        <div class="game-card-img-wrap">
+          <img [src]="juego.image" [alt]="juego.name" class="game-card-img" />
+          <div class="game-card-overlay"></div>
+          <div class="game-card-badge game-card-badge--gold">
+            <i class="bi bi-trophy-fill"></i>
+            {{ juego.progreso | number:'1.0-0' }}%
+          </div>
+        </div>
+
+        <div class="game-card-body">
+          <h3 class="game-card-title">{{ juego.name }}</h3>
+
+          <div class="game-progress-row">
+            <span class="gpr-label">Logros</span>
+            <span class="gpr-count">{{ juego.logrosConseguidos }}/{{ juego.logrosTotales }}</span>
+          </div>
+          <div class="game-bar-track">
+            <div class="game-bar-fill game-bar-fill--gold" [style.width.%]="juego.progreso"></div>
+          </div>
+
+          <button class="game-open-btn" [routerLink]="['/nav/games/details', juego.appId]">
+            Ver logros
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="juegosDestacados.length === 0">
+      <i class="bi bi-trophy empty-state-icon"></i>
+      <p>Ningún juego supera el 90% de logros aún.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SECCIÓN: JUEGOS A PROGRESAR (≤15%)
+  ══════════════════════════════════════════ -->
+  <section class="home-section">
+    <div class="section-header">
+      <div class="section-title-group">
+        <span class="section-icon section-icon--blue"><i class="bi bi-controller"></i></span>
+        <h2 class="section-title">Por Progresar</h2>
+      </div>
+      <span class="section-badge" *ngIf="juegosMenosDestacados.length > 0">{{ juegosMenosDestacados.length }}</span>
+    </div>
+
+    <div class="games-grid" *ngIf="juegosMenosDestacados.length > 0">
+      <div class="game-card" *ngFor="let juego of juegosMenosDestacados">
+        <div class="game-card-img-wrap">
+          <img [src]="juego.image" [alt]="juego.name" class="game-card-img" />
+          <div class="game-card-overlay"></div>
+          <div class="game-card-badge game-card-badge--blue">
+            {{ juego.progreso | number:'1.0-0' }}%
+          </div>
+        </div>
+
+        <div class="game-card-body">
+          <h3 class="game-card-title">{{ juego.name }}</h3>
+
+          <div class="game-progress-row">
+            <span class="gpr-label">Logros</span>
+            <span class="gpr-count">{{ juego.logrosConseguidos }}/{{ juego.logrosTotales }}</span>
+          </div>
+          <div class="game-bar-track">
+            <div class="game-bar-fill game-bar-fill--blue" [style.width.%]="juego.progreso"></div>
+          </div>
+
+          <button class="game-open-btn" [routerLink]="['/nav/games/details', juego.appId]">
+            Ver logros
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="juegosMenosDestacados.length === 0">
+      <i class="bi bi-controller empty-state-icon"></i>
+      <p>No hay juegos por debajo del 15% de logros.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SECCIÓN: INSIGNIAS
+  ══════════════════════════════════════════ -->
+  <section class="home-section">
+    <div class="section-header">
+      <div class="section-title-group">
+        <span class="section-icon section-icon--purple"><i class="bi bi-award-fill"></i></span>
+        <h2 class="section-title">Insignias Conseguidas</h2>
+      </div>
+      <span class="section-badge" *ngIf="insigniasActuales.length > 0">{{ insigniasActuales.length }}</span>
+    </div>
+
+    <div class="medals-grid" *ngIf="insigniasActuales.length > 0">
+      <div class="medal-card" *ngFor="let insignia of insigniasActuales">
+        <div class="medal-img-wrap">
+          <img [src]="insignia.imagen" [alt]="insignia.titulo" class="medal-img" />
+        </div>
+        <div class="medal-body">
+          <h4 class="medal-title">{{ insignia.titulo }}</h4>
+          <p class="medal-desc">{{ insignia.descripcion }}</p>
+          <button class="game-open-btn" routerLink="/nav/medals">
+            Ver insignia
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="insigniasActuales.length === 0">
+      <i class="bi bi-award empty-state-icon"></i>
+      <p>Aún no has conseguido ninguna insignia.</p>
+    </div>
+  </section>
+
+</div>

@@ -1,0 +1,148 @@
+<div class="details-page">
+
+  <!-- ══════════════════════════════════════════
+       HERO BANNER
+  ══════════════════════════════════════════ -->
+  <div class="hero-wrap">
+    <img [src]="juego.image" [alt]="juego.name" class="hero-img" />
+    <div class="hero-overlay"></div>
+
+    <!-- Top bar: volver + acciones -->
+    <div class="hero-top">
+      <button class="back-btn" (click)="volverAJuegos()">
+        <i class="bi bi-arrow-left"></i>
+        <span>Biblioteca</span>
+      </button>
+
+      <button
+        class="trophy-btn"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasLogros"
+        aria-controls="offcanvasLogros">
+        <i class="bi bi-trophy-fill"></i>
+        <span class="trophy-count" *ngIf="logrosUser.length > 0">
+          {{ conseguidosCount }} / {{ logrosUser.length }}
+        </span>
+      </button>
+    </div>
+
+    <!-- Bottom: nombre + progreso inline -->
+    <div class="hero-bottom">
+      <h1 class="hero-title">{{ juego.name }}</h1>
+
+      <div class="hero-progress" *ngIf="logrosUser.length > 0">
+        <div class="hp-bar-track">
+          <div class="hp-bar-fill"
+               [style.width.%]="conseguidosCount  * 100 / logrosUser.length"
+               [class.fill-high]="conseguidosCount  * 100 / logrosUser.length >= 75"
+               [class.fill-mid]="conseguidosCount  * 100 / logrosUser.length >= 25 && 10 * 100 / logrosUser.length < 75">
+          </div>
+        </div>
+        <span class="hp-pct">{{ conseguidosCount  * 100 / logrosUser.length | number:'1.0-0' }}%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       DESCRIPCIÓN
+  ══════════════════════════════════════════ -->
+  <div class="desc-card">
+    <div class="desc-label">
+      <i class="bi bi-info-circle"></i>
+      Descripción
+    </div>
+    <p class="desc-text">{{ juego.description }}</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STATS RÁPIDAS
+  ══════════════════════════════════════════ -->
+  <div class="stats-row" *ngIf="logrosUser.length > 0">
+    <div class="stat-card">
+      <span class="stat-number stat-accent">{{ conseguidosCount }}</span>
+      <span class="stat-label">Conseguidos</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-card">
+      <span class="stat-number">{{ logrosUser.length - conseguidosCount  }}</span>
+      <span class="stat-label">Pendientes</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-card">
+      <span class="stat-number stat-total">{{ logrosUser.length }}</span>
+      <span class="stat-label">Totales</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     OFFCANVAS — Logros
+══════════════════════════════════════════ -->
+<div class="offcanvas offcanvas-bottom offcanvas-logros"
+     tabindex="-1"
+     id="offcanvasLogros"
+     aria-labelledby="offcanvasLogrosLabel">
+
+  <div class="offcanvas-header">
+    <div class="offcanvas-handle"></div>
+    <div class="oc-title-row">
+      <span class="oc-icon"><i class="bi bi-trophy-fill"></i></span>
+      <h5 id="offcanvasLogrosLabel" class="oc-title">Logros del juego</h5>
+      <span class="oc-count" *ngIf="logrosUser.length > 0">
+        {{ conseguidosCount }}
+      </span>
+    </div>
+    <button type="button" class="btn-close-custom" data-bs-dismiss="offcanvas" aria-label="Close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- Mini progress bar -->
+  <div class="oc-progress" *ngIf="logrosUser.length > 0">
+    <div class="ocp-track">
+      <div class="ocp-fill"
+           [style.width.%]="conseguidosCount  * 100 / logrosUser.length">
+      </div>
+    </div>
+  </div>
+
+  <div class="offcanvas-body">
+
+    <!-- Lista de logros -->
+    <div class="logros-list" *ngIf="logrosUser.length > 0; else sinLogros">
+      <div
+        class="logro-item"
+        [class.conseguido]="logroItem.conseguido"
+        *ngFor="let logroItem of logrosUser"
+        (click)="toggleLogro(logroItem)">
+
+        <!-- Estado visual -->
+        <div class="logro-check" [class.active]="logroItem.conseguido">
+          <i class="bi" [class.bi-check-lg]="logroItem.conseguido"></i>
+        </div>
+
+        <!-- Info -->
+        <div class="logro-info">
+          <span class="logro-name">{{ logroItem.achievement.name }}</span>
+        </div>
+
+        <!-- Trofeo estado -->
+        <i class="bi logro-trophy"
+           [class.bi-award-fill]="logroItem.conseguido"
+           [class.bi-award]="!logroItem.conseguido">
+        </i>
+
+      </div>
+    </div>
+
+    <!-- Sin logros -->
+    <ng-template #sinLogros>
+      <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-trophy"></i></div>
+        <p class="empty-text">Este juego aún no tiene logros disponibles.</p>
+      </div>
+    </ng-template>
+
+  </div>
+</div>

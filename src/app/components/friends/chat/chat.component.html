@@ -1,0 +1,102 @@
+<div class="chat-page">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <a [routerLink]="['/nav/friends/profile', uid()]" class="chat-back-btn">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+
+    @if (friendProfile()) {
+      <div class="chat-header-avatar">
+        @if (friendProfile().photoURL) {
+          <img [src]="friendProfile().photoURL" [alt]="friendProfile().username" class="chat-avatar" />
+        } @else {
+          <div class="chat-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+        }
+        <span class="chat-online-dot"></span>
+      </div>
+      <div class="chat-header-info">
+        <span class="chat-header-name">{{ friendProfile().username }}</span>
+        <span class="chat-header-status">En línea</span>
+      </div>
+    }
+
+    <div class="chat-header-actions">
+      <a [routerLink]="['/nav/friends/compare', uid()]" class="chat-action-btn" title="Comparar logros">
+        <i class="bi bi-bar-chart-line-fill"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Messages area -->
+  <div class="messages-area">
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner-ring"></div>
+      </div>
+    } @else if (messages().length === 0) {
+      <div class="empty-chat">
+        <div class="empty-chat-icon">
+          <i class="bi bi-chat-heart"></i>
+        </div>
+        <p>¡Di hola a {{ friendProfile()?.username }}!</p>
+        <span>No hay mensajes aún. Sé el primero en escribir.</span>
+      </div>
+    } @else {
+      @for (msg of messages(); track msg.id; let i = $index) {
+
+        @if (showDateSeparator(messages(), i)) {
+          <div class="date-separator">
+            <span class="date-sep-line"></span>
+            <span class="date-sep-text">{{ formatDate(msg.timestamp) }}</span>
+            <span class="date-sep-line"></span>
+          </div>
+        }
+
+        <div class="msg-row" [class.msg-row--me]="isMe(msg)">
+          @if (!isMe(msg)) {
+            <div class="msg-avatar-mini">
+              @if (friendProfile()?.photoURL) {
+                <img [src]="friendProfile().photoURL" alt="" />
+              } @else {
+                <div class="msg-avatar-ph"><i class="bi bi-person-fill"></i></div>
+              }
+            </div>
+          }
+          <div class="msg-bubble" [class.msg-bubble--me]="isMe(msg)">
+            <span class="msg-text">{{ msg.text }}</span>
+            <span class="msg-time">{{ formatTime(msg.timestamp) }}</span>
+          </div>
+        </div>
+      }
+      <div #messagesEnd></div>
+    }
+  </div>
+
+  <!-- Input bar -->
+  <div class="chat-input-bar">
+    <div class="chat-input-wrap">
+      <textarea
+        class="chat-input"
+        placeholder="Escribe un mensaje…"
+        rows="1"
+        [value]="messageText()"
+        (input)="messageText.set($any($event.target).value)"
+        (keydown)="onKeydown($event)"
+      ></textarea>
+      <button
+        class="chat-send-btn"
+        (click)="send()"
+        [disabled]="!messageText().trim() || sending()"
+        [class.active]="messageText().trim().length > 0">
+        @if (sending()) {
+          <div class="send-spinner"></div>
+        } @else {
+          <i class="bi bi-send-fill"></i>
+        }
+      </button>
+    </div>
+    <p class="chat-hint">Intro para enviar · Shift+Intro para nueva línea</p>
+  </div>
+
+</div>

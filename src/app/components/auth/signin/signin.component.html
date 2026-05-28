@@ -1,0 +1,240 @@
+<div class="signin-root">
+
+  <!-- Background scene -->
+  <div class="scene">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div *ngFor="let p of particles" class="particle" [ngStyle]="{
+        left: p.left + 'vw',
+        width: p.width + 'px',
+        height: p.height + 'px',
+        animationDuration: p.duration + 's',
+        animationDelay: p.delay + 's'
+      }">
+    </div>
+  </div>
+
+  <div class="auth-page">
+    <div class="auth-card">
+
+      <!-- Brand -->
+      <div class="auth-brand">
+        <div class="brand-icon">
+          <i class="bi bi-trophy-fill"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Achievement</span>
+          <span class="brand-sub">Tracker</span>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <div class="auth-heading">
+        <h1 class="auth-title">Crear cuenta</h1>
+        <p class="auth-desc">Regístrate en Achievement Tracker</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+
+        <!-- Nombre + Apellidos -->
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="firstName">
+              <i class="bi bi-person"></i>
+              Nombre
+            </label>
+            <input type="text" id="firstName" class="field-input" [ngClass]="{
+                      'is-valid':
+                        this.registerForm.get('firstName')?.valid &&
+                        this.registerForm.get('firstName')?.touched,
+                      'is-invalid':
+                        this.registerForm.get('firstName')?.invalid &&
+                        this.registerForm.get('firstName')?.touched
+                    }" placeholder="Tu nombre" formControlName="firstName" />
+            <span class="field-hint error"
+              *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">
+              El nombre es obligatorio
+            </span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="lastName">
+              <i class="bi bi-person"></i>
+              Apellidos
+            </label>
+            <input type="text" id="lastName" class="field-input" [ngClass]="{
+                      'is-valid':
+                        this.registerForm.get('lastName')?.valid &&
+                        this.registerForm.get('lastName')?.touched,
+                      'is-invalid':
+                        this.registerForm.get('lastName')?.invalid &&
+                        this.registerForm.get('lastName')?.touched
+                    }" placeholder="Tus apellidos" formControlName="lastName" />
+            <span class="field-hint error"
+              *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
+              Los apellidos son obligatorios
+            </span>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field-group">
+          <label class="field-label" for="email">
+            <i class="bi bi-envelope"></i>
+            Email
+          </label>
+          <input type="email" id="email" class="field-input" [ngClass]="{
+                      'is-valid':
+                        this.registerForm.get('email')?.valid &&
+                        this.registerForm.get('email')?.touched,
+                      'is-invalid':
+                        this.registerForm.get('email')?.invalid &&
+                        this.registerForm.get('email')?.touched
+                    }" placeholder="usuario@email.com" formControlName="email" autocomplete="email" />
+          <span class="field-hint error"
+            *ngIf="registerForm.get('email')?.errors?.['required'] && registerForm.get('email')?.touched">
+            El email es obligatorio
+          </span>
+          <span class="field-hint error"
+            *ngIf="registerForm.get('email')?.errors?.['email'] && registerForm.get('email')?.touched">
+            El email debe tener un formato válido
+          </span>
+        </div>
+
+        <!-- Username -->
+        <div class="field-group">
+          <label class="field-label" for="username">
+            <i class="bi bi-at"></i>
+            Nombre de usuario
+          </label>
+          <input type="text" id="username" class="field-input" [ngClass]="{
+                      'is-valid':
+                        this.registerForm.get('username')?.valid &&
+                        this.registerForm.get('username')?.touched,
+                      'is-invalid':
+                        this.registerForm.get('username')?.invalid &&
+                        this.registerForm.get('username')?.touched
+                    }" placeholder="username" formControlName="username" autocomplete="username" />
+          <span class="field-hint error"
+            *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+            El nombre de usuario es obligatorio
+          </span>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="field-group">
+          <label class="field-label" for="password">
+            <i class="bi bi-lock"></i>
+            Contraseña
+          </label>
+          <input type="password" id="password" class="field-input" [ngClass]="{
+                      'is-valid':
+                        this.registerForm.get('password')?.valid &&
+                        this.registerForm.get('password')?.touched,
+                      'is-invalid':
+                        this.registerForm.get('password')?.invalid &&
+                        this.registerForm.get('password')?.touched
+                    }" placeholder="••••••••" formControlName="password" autocomplete="new-password" />
+          <span class="field-hint error"
+            *ngIf="registerForm.get('password')?.errors?.['required'] && registerForm.get('password')?.touched">
+            La contraseña es obligatoria
+          </span>
+          <span class="field-hint error"
+            *ngIf="registerForm.get('password')?.errors?.['minlength'] && registerForm.get('password')?.touched">
+            Mínimo 5 caracteres
+          </span>
+          <span class="field-hint error"
+            *ngIf="registerForm.get('password')?.errors?.['weakPassword'] && registerForm.get('password')?.touched">
+            Debe incluir mayúsculas y números
+          </span>
+        </div>
+
+        <!-- Repetir contraseña -->
+        <div class="field-group">
+          <label class="field-label" for="confirmPassword">
+            <i class="bi bi-lock-fill"></i>
+            Repetir contraseña
+          </label>
+          <input type="password" id="confirmPassword" class="field-input" [ngClass]="{
+                      'is-valid':
+                        this.registerForm.get('confirmPassword')?.valid &&
+                        this.registerForm.get('confirmPassword')?.touched,
+                      'is-invalid':
+                        this.registerForm.get('confirmPassword')?.invalid &&
+                        this.registerForm.get('confirmPassword')?.touched
+                    }" placeholder="••••••••" formControlName="confirmPassword" autocomplete="new-password" />
+          <span class="field-hint error"
+            *ngIf="registerForm.get('confirmPassword')?.errors?.['required'] && registerForm.get('confirmPassword')?.touched">
+            Repite la contraseña
+          </span>
+          <span class="field-hint error"
+            *ngIf="registerForm.get('confirmPassword')?.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched">
+            Las contraseñas no coinciden
+          </span>
+        </div>
+
+        <!-- Términos y condiciones -->
+        <label class="conditions-item" [class.conditions-active]="registerForm.get('conditions')?.value" [ngClass]="{
+                      'is-valid':
+                        this.registerForm.get('conditions')?.valid &&
+                        this.registerForm.get('conditions')?.touched,
+                      'is-invalid':
+                        this.registerForm.get('conditions')?.invalid &&
+                        this.registerForm.get('conditions')?.touched
+                    }">
+          <input type="checkbox" class="conditions-checkbox" formControlName="conditions" id="condiciones" />
+          <span class="conditions-check">
+            <i class="bi bi-check-lg" *ngIf="registerForm.get('conditions')?.value"></i>
+          </span>
+          <span class="conditions-label">Acepto los términos y condiciones</span>
+        </label>
+        <span class="field-hint error"
+          *ngIf="registerForm.get('conditions')?.invalid && registerForm.get('conditions')?.touched">
+          Debes aceptar los términos para continuar
+        </span>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-primary-auth" [disabled]="registerForm.invalid">
+          <i class="bi bi-person-plus"></i>
+          Crear cuenta
+        </button>
+
+        <!-- Divider -->
+        <div class="auth-divider">
+          <span></span>
+          <p>o continúa con</p>
+          <span></span>
+        </div>
+
+        <!-- Google -->
+        <button type="button" class="btn-google" (click)="loginGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+              fill="#4285F4" />
+            <path
+              d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"
+              fill="#34A853" />
+            <path
+              d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
+              fill="#FBBC05" />
+            <path
+              d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
+              fill="#EA4335" />
+          </svg>
+          Continuar con Google
+        </button>
+
+      </form>
+
+      <!-- Footer -->
+      <p class="auth-footer">
+        ¿Ya tienes cuenta?
+        <a routerLink="/login" class="auth-link">Inicia sesión</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

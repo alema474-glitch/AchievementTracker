@@ -1,0 +1,146 @@
+<div class="profile-edit-page">
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner-ring"></div>
+      <span>Cargando perfil…</span>
+    </div>
+  } @else {
+
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <div class="page-header-text">
+      <p class="page-eyebrow"><span class="eyebrow-dot"></span>Mi cuenta</p>
+      <h1 class="page-title">Editar <span class="title-accent">Perfil</span></h1>
+    </div>
+  </div>
+
+  <div class="edit-layout">
+
+    <!-- Avatar column -->
+    <div class="avatar-col">
+      <div class="current-avatar-wrap">
+        <div class="avatar-ring">
+          @if (form.photoURL) {
+            <img [src]="form.photoURL" alt="avatar" class="current-avatar" />
+          } @else {
+            <div class="avatar-placeholder">
+              <i class="bi bi-person-fill"></i>
+            </div>
+          }
+        </div>
+        <span class="avatar-label">Avatar actual</span>
+      </div>
+
+      <div class="avatar-section">
+        <p class="section-micro-label">Elige un avatar</p>
+        <div class="avatar-grid">
+          @for (preset of AVATAR_PRESETS; track preset) {
+            <button
+              class="avatar-opt"
+              [class.selected]="form.photoURL === preset"
+              (click)="selectAvatar(preset)"
+              type="button">
+              <img [src]="preset" alt="avatar option" />
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="url-input-wrap">
+        <label class="field-label">O pega una URL de imagen</label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-link-45deg input-icon"></i>
+          <input
+            type="url"
+            class="field-input"
+            placeholder="https://..."
+            [(ngModel)]="form.photoURL"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Form column -->
+    <div class="form-col">
+
+      <div class="form-group">
+        <label class="field-label">
+          <i class="bi bi-at"></i> Username
+        </label>
+        <input
+          type="text"
+          class="field-input"
+          placeholder="tu_username"
+          [(ngModel)]="form.username"
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="field-label">
+            <i class="bi bi-person"></i> Nombre
+          </label>
+          <input
+            type="text"
+            class="field-input"
+            placeholder="Nombre"
+            [(ngModel)]="form.firstName"
+          />
+        </div>
+        <div class="form-group">
+          <label class="field-label">
+            <i class="bi bi-person"></i> Apellido
+          </label>
+          <input
+            type="text"
+            class="field-input"
+            placeholder="Apellido"
+            [(ngModel)]="form.lastName"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">
+          <i class="bi bi-chat-quote"></i> Bio
+        </label>
+        <textarea
+          class="field-input field-textarea"
+          placeholder="Cuéntanos algo sobre ti..."
+          [(ngModel)]="form.bio"
+          rows="3"
+        ></textarea>
+      </div>
+
+      @if (error()) {
+        <div class="feedback-error">
+          <i class="bi bi-exclamation-circle"></i>
+          {{ error() }}
+        </div>
+      }
+      @if (success()) {
+        <div class="feedback-success">
+          <i class="bi bi-check-circle-fill"></i>
+          ¡Perfil actualizado correctamente!
+        </div>
+      }
+
+      <div class="form-actions">
+        <button class="btn-cancel" (click)="goBack()" type="button">Cancelar</button>
+        <button class="btn-save" (click)="save()" [disabled]="saving()" type="button">
+          @if (saving()) {
+            <span class="btn-spinner"></span> Guardando…
+          } @else {
+            <i class="bi bi-check-lg"></i> Guardar cambios
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  }
+</div>

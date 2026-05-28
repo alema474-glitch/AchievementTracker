@@ -1,0 +1,147 @@
+<div class="games-page">
+
+  <!-- ══════════════════════════════════════════
+       HEADER — Título + buscador + acciones
+  ══════════════════════════════════════════ -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="header-eyebrow">
+        <span class="eyebrow-dot"></span>
+        Tu colección
+      </p>
+      <h1 class="page-title">Biblioteca<span class="title-count" *ngIf="juegosFiltrados.length > 0">{{ juegosFiltrados.length }}</span></h1>
+    </div>
+
+    <div class="header-actions">
+      <div class="search-wrap">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          id="input"
+          class="search-input"
+          placeholder="Buscar juego..."
+          (keyup)="mostrarTexto($event)"
+        />
+      </div>
+      <button class="action-btn" routerLink="add" title="Añadir juego">
+        <i class="bi bi-plus-lg"></i>
+      </button>
+      <button class="action-btn" data-bs-toggle="offcanvas" data-bs-target="#panelFiltros" title="Filtrar">
+        <i class="bi bi-sliders2"></i>
+        <span *ngIf="categoriasSeleccionadas.length > 0" class="filter-badge">{{ categoriasSeleccionadas.length }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       GRID de juegos
+  ══════════════════════════════════════════ -->
+  <div class="games-grid" *ngIf="juegosFiltrados.length > 0">
+    <div class="game-card" *ngFor="let juego of juegosFiltrados">
+
+      <div class="game-img-wrap">
+        <img [src]="juego.image" [alt]="'Portada de ' + juego.name" class="game-img" />
+        <div class="game-img-overlay"></div>
+
+        <!-- Porcentaje badge -->
+        <div class="progress-badge"
+             [class.badge-high]="juego.progreso >= 75"
+             [class.badge-mid]="juego.progreso >= 25 && juego.progreso < 75"
+             [class.badge-low]="juego.progreso < 25">
+          {{ juego.progreso | number:'1.0-0' }}%
+        </div>
+      </div>
+
+      <div class="game-body">
+        <h3 class="game-title">{{ juego.name }}</h3>
+
+        <!-- Géneros -->
+        <div class="game-genres" *ngIf="juego.genres.length > 0">
+          <span class="genre-pill" *ngFor="let g of juego.genres | slice:0:2">{{ g }}</span>
+        </div>
+
+        <!-- Progress row -->
+        <div class="game-progress">
+          <div class="progress-row">
+            <span class="prog-label">Logros</span>
+            <span class="prog-count">{{ juego.logrosConseguidos }}/{{ juego.logrosTotales }}</span>
+          </div>
+          <div class="prog-track">
+            <div class="prog-fill"
+                 [style.width.%]="juego.progreso"
+                 [class.fill-high]="juego.progreso >= 75"
+                 [class.fill-mid]="juego.progreso >= 25 && juego.progreso < 75"
+                 [class.fill-low]="juego.progreso < 25">
+            </div>
+          </div>
+        </div>
+
+        <button class="open-btn" [routerLink]="['/nav/games/details', juego.appId]">
+          Ver logros
+          <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="juegosFiltrados.length === 0">
+    <div class="empty-icon"><i class="bi bi-controller"></i></div>
+    <h3 class="empty-title">Sin resultados</h3>
+    <p class="empty-desc">No se encontraron juegos con los filtros actuales.</p>
+    <button class="action-btn" routerLink="add">
+      <i class="bi bi-plus-lg"></i>
+      Añadir juego
+    </button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     OFFCANVAS — Filtros
+══════════════════════════════════════════ -->
+<div class="offcanvas offcanvas-end offcanvas-filtros"
+     tabindex="-1"
+     id="panelFiltros"
+     aria-labelledby="filtrosLabel">
+
+  <div class="offcanvas-header">
+    <div class="offcanvas-handle-side"></div>
+    <div class="oc-title-row">
+      <span class="oc-icon"><i class="bi bi-sliders2"></i></span>
+      <h5 id="filtrosLabel" class="oc-title">Filtrar por género</h5>
+    </div>
+    <button type="button" class="btn-close-custom" data-bs-dismiss="offcanvas" aria-label="Close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="offcanvas-body">
+
+    <p class="filter-hint" *ngIf="categoriasSeleccionadas.length > 0">
+      {{ categoriasSeleccionadas.length }} activo(s) · {{ juegosFiltrados.length }} juegos
+    </p>
+    <p class="filter-hint" *ngIf="categoriasSeleccionadas.length === 0">
+      Selecciona géneros para filtrar
+    </p>
+
+    <div class="filter-list">
+      <label
+        class="filter-item"
+        [class.active]="categoriasSeleccionadas.includes(categoria)"
+        *ngFor="let categoria of categoriasDisponibles"
+        [for]="categoria">
+        <input
+          type="checkbox"
+          class="filter-checkbox"
+          [id]="categoria"
+          (change)="toggleCategoria(categoria)"
+        />
+        <span class="filter-check-icon">
+          <i class="bi bi-check-lg" *ngIf="categoriasSeleccionadas.includes(categoria)"></i>
+        </span>
+        <span class="filter-label">{{ categoria }}</span>
+      </label>
+    </div>
+
+  </div>
+</div>

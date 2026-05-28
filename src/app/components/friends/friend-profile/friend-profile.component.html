@@ -1,0 +1,119 @@
+<div class="profile-page">
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner-ring"></div><span>Cargando perfil…</span>
+    </div>
+  } @else if (!profile()) {
+    <div class="empty-state">
+      <div class="empty-icon"><i class="bi bi-person-x"></i></div>
+      <h3>Usuario no encontrado</h3>
+      <a routerLink="/nav/friends" class="btn-back">Volver</a>
+    </div>
+  } @else {
+
+  <!-- Back -->
+  <a routerLink="/nav/friends" class="back-btn">
+    <i class="bi bi-arrow-left"></i> Amigos
+  </a>
+
+  <!-- Profile hero -->
+  <div class="profile-hero">
+    <div class="hero-avatar-ring">
+      @if (profile().photoURL) {
+        <img [src]="profile().photoURL" [alt]="profile().username" class="hero-avatar" />
+      } @else {
+        <div class="hero-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+      }
+    </div>
+    <div class="hero-info">
+      <h1 class="hero-username">{{ profile().username }}</h1>
+      <p class="hero-name">{{ profile().firstName }} {{ profile().lastName }}</p>
+      @if (profile().bio) {
+        <p class="hero-bio">{{ profile().bio }}</p>
+      }
+    </div>
+
+    <div class="hero-actions">
+      <a [routerLink]="['/nav/friends/compare', uid()]" class="hero-action-btn hero-action-btn--compare">
+        <i class="bi bi-bar-chart-line-fill"></i> Comparar
+      </a>
+      <a [routerLink]="['/nav/friends/chat', uid()]" class="hero-action-btn hero-action-btn--chat">
+        <i class="bi bi-chat-dots-fill"></i> Chat
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-value">{{ stats().totalJuegos }}</span>
+      <span class="stat-label">Juegos</span>
+    </div>
+    <div class="stat-card stat-card--accent">
+      <span class="stat-value">{{ stats().conseguidos }}</span>
+      <span class="stat-label">Logros</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ stats().progreso }}%</span>
+      <span class="stat-label">Completado</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ insignias().length }}</span>
+      <span class="stat-label">Insignias</span>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="global-progress">
+    <div class="gp-header">
+      <span class="gp-title">Progreso global</span>
+      <span class="gp-pct">{{ stats().conseguidos }} / {{ stats().totalLogros }}</span>
+    </div>
+    <div class="gp-track">
+      <div class="gp-fill" [style.width.%]="stats().progreso">
+        <span class="gp-glow"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insignias -->
+  @if (insignias().length > 0) {
+    <section class="section">
+      <h2 class="section-title"><i class="bi bi-award-fill section-icon"></i> Insignias desbloqueadas</h2>
+      <div class="insignias-grid">
+        @for (ins of insignias(); track ins.id) {
+          <div class="insignia-card">
+            <img [src]="ins.imagen" [alt]="ins.titulo" class="insignia-img" />
+            <span class="insignia-name">{{ ins.titulo }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Games -->
+  <section class="section">
+    <h2 class="section-title"><i class="bi bi-controller section-icon"></i> Biblioteca ({{ games().length }})</h2>
+    @if (games().length === 0) {
+      <p class="empty-text">Sin juegos en la biblioteca</p>
+    } @else {
+      <div class="games-list">
+        @for (game of games(); track game.appId) {
+          <div class="game-row">
+            <img [src]="game.image" [alt]="game.name" class="game-row-img" />
+            <div class="game-row-info">
+              <span class="game-row-name">{{ game.name }}</span>
+              <div class="game-row-bar-track">
+                <div class="game-row-bar-fill" [style.width.%]="game.progreso"></div>
+              </div>
+              <span class="game-row-pct">{{ game.logrosConseguidos }}/{{ game.logrosTotales }} &bull; {{ game.progreso | number:'1.0-0' }}%</span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  }
+</div>

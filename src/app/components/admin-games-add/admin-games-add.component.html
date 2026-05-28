@@ -1,0 +1,111 @@
+<div class="admin-add-page">
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════ -->
+  <div class="page-header">
+    <p class="header-eyebrow">
+      <span class="eyebrow-dot"></span>
+      Panel de administración
+    </p>
+    <h1 class="page-title">Añadir desde Steam</h1>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FORM CARD
+  ══════════════════════════════════════════ -->
+  <div class="form-card">
+
+    <div class="form-content">
+      <p class="form-desc">
+        Introduce el <strong>AppID de Steam</strong> del juego que quieres importar al catálogo. Puedes encontrarlo en
+        la URL de la página del juego en Steam.
+      </p>
+
+      <!-- Ejemplo visual -->
+      <div class="url-example">
+        <span class="url-muted">store.steampowered.com/app/</span><span class="url-id">570</span><span
+          class="url-muted">/Dota_2/</span>
+      </div>
+
+      <form (ngSubmit)="addGame()" class="add-form">
+        <div class="field-group">
+          <label class="field-label" for="appid">
+            <i class="bi bi-hash"></i>
+            Steam AppID
+          </label>
+          <div class="field-wrap">
+            <input type="number" id="appid" class="field-input" [(ngModel)]="appid" name="appid" placeholder="ej. 570"
+              required min="1" />
+          </div>
+        </div>
+
+        <!-- Feedback banner -->
+        <div class="import-feedback import-feedback--success" *ngIf="estado === 'success'">
+          <div class="ifb-icon"><i class="bi bi-check-circle-fill"></i></div>
+          <div class="ifb-text">
+            <span class="ifb-title">Juego importado correctamente</span>
+            <span class="ifb-desc">Redirigiendo a la lista de juegos...</span>
+          </div>
+          <div class="ifb-spinner">
+            <div class="ifb-dot"></div>
+            <div class="ifb-dot"></div>
+            <div class="ifb-dot"></div>
+          </div>
+        </div>
+
+        <div class="import-feedback import-feedback--error" *ngIf="estado === 'error'">
+          <div class="ifb-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+          <div class="ifb-text">
+            <span class="ifb-title">Error al importar el juego</span>
+            <span class="ifb-desc">{{ errorMsg }}</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="history.back()" [disabled]="loading">
+            <i class="bi bi-arrow-left"></i>
+            Cancelar
+          </button>
+          <button type="submit" class="btn-submit" [disabled]="loading || estado === 'success'">
+            <!-- Estado normal -->
+            <ng-container *ngIf="!loading && estado !== 'success'">
+              <i class="bi bi-cloud-download"></i>
+              Importar juego
+            </ng-container>
+            <!-- Cargando -->
+            <ng-container *ngIf="loading">
+              <span class="btn-spinner"></span>
+              Importando...
+            </ng-container>
+            <!-- Éxito -->
+            <ng-container *ngIf="estado === 'success'">
+              <i class="bi bi-check-lg"></i>
+              Importado
+            </ng-container>
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Info cards -->
+  <div class="info-cards">
+    <div class="info-card">
+      <span class="ic-icon"><i class="bi bi-info-circle"></i></span>
+      <div>
+        <div class="ic-title">¿Dónde encuentro el AppID?</div>
+        <div class="ic-desc">Ve a la página del juego en Steam. El número en la URL es el AppID.</div>
+      </div>
+    </div>
+    <div class="info-card">
+      <span class="ic-icon ic-icon--warn"><i class="bi bi-exclamation-triangle"></i></span>
+      <div>
+        <div class="ic-title">Solo juegos con logros</div>
+        <div class="ic-desc">La importación incluye automáticamente todos los logros disponibles del juego.</div>
+      </div>
+    </div>
+  </div>
+
+</div>

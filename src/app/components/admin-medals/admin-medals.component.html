@@ -1,0 +1,67 @@
+<div class="admin-medals-page">
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════ -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="header-eyebrow">
+        <span class="eyebrow-dot"></span>
+        Panel de administración
+      </p>
+      <h1 class="page-title">
+        Insignias
+        <span class="title-count" *ngIf="medals.length > 0">{{ medals.length }}</span>
+      </h1>
+    </div>
+
+    <button class="action-btn action-btn--primary" (click)="goToAdd()" title="Crear nueva insignia">
+      <i class="bi bi-plus-lg"></i>
+    </button>
+  </div>
+
+  <!-- Admin notice -->
+  <div class="admin-notice">
+    <i class="bi bi-shield-fill-check"></i>
+    Modo administrador — estas insignias se asignan automáticamente a los usuarios según su progreso.
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       GRID
+  ══════════════════════════════════════════ -->
+  <div class="medals-grid" *ngIf="medals.length > 0">
+    <div class="medal-card" *ngFor="let insignia of medals">
+
+      <div class="medal-img-wrap">
+        <img [src]="insignia.imagen" [alt]="'Insignia: ' + insignia.titulo" class="medal-img" />
+      </div>
+
+      <div class="medal-body">
+        <h4 class="medal-title">{{ insignia.titulo }}</h4>
+        <p class="medal-desc">{{ insignia.descripcion }}</p>
+
+        <div class="medal-meta">
+          <span class="meta-pill meta-pill--type" *ngIf="insignia.tipo">
+            <i class="bi bi-tag"></i>{{ insignia.tipo }}
+          </span>
+          <span class="meta-pill meta-pill--value" *ngIf="insignia.valor">
+            <i class="bi bi-hash"></i>{{ insignia.valor }}
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="medals.length === 0">
+    <div class="empty-icon"><i class="bi bi-award"></i></div>
+    <h3 class="empty-title">Sin insignias</h3>
+    <p class="empty-desc">Crea la primera insignia del sistema.</p>
+    <button class="empty-add-btn" (click)="goToAdd()">
+      <i class="bi bi-plus-lg"></i>
+      Crear insignia
+    </button>
+  </div>
+
+</div>

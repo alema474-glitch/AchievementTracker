@@ -1,0 +1,139 @@
+<div class="admin-medal-add-page">
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════ -->
+  <div class="page-header">
+    <p class="header-eyebrow">
+      <span class="eyebrow-dot"></span>
+      Panel de administración
+    </p>
+    <h1 class="page-title">Nueva Insignia</h1>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FORM CARD
+  ══════════════════════════════════════════ -->
+  <div class="form-card">
+
+    <!-- Decoración header -->
+    <div class="form-card-header">
+      <span class="fch-icon"><i class="bi bi-award-fill"></i></span>
+      <div class="fch-lines">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="form-content">
+
+      <!-- Error global -->
+      <div class="error-banner" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="medalForm" (ngSubmit)="onSubmit()" class="add-form">
+
+        <!-- Fila: Título + Descripción -->
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="title">
+              <i class="bi bi-type"></i> Título
+            </label>
+            <input type="text" id="title" class="field-input"
+              [class.field-error]="medalForm.get('title')?.invalid && medalForm.get('title')?.touched"
+              [class.field-valid]="medalForm.get('title')?.valid && medalForm.get('title')?.touched"
+              placeholder="ej. Primer logro" formControlName="title" />
+            <span class="field-hint error" *ngIf="medalForm.get('title')?.invalid && medalForm.get('title')?.touched">
+              El título es obligatorio
+            </span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="description">
+              <i class="bi bi-text-left"></i> Descripción
+            </label>
+            <input type="text" id="description" class="field-input"
+              [class.field-error]="medalForm.get('description')?.invalid && medalForm.get('description')?.touched"
+              [class.field-valid]="medalForm.get('description')?.valid && medalForm.get('description')?.touched"
+              placeholder="ej. Consigue tu primer logro" formControlName="description" />
+            <span class="field-hint error"
+              *ngIf="medalForm.get('description')?.invalid && medalForm.get('description')?.touched">
+              La descripción es obligatoria
+            </span>
+          </div>
+        </div>
+
+        <!-- URL imagen -->
+        <div class="field-group">
+          <label class="field-label" for="image">
+            <i class="bi bi-image"></i> URL de imagen
+          </label>
+          <input type="text" id="image" class="field-input"
+            [class.field-error]="medalForm.get('image')?.invalid && medalForm.get('image')?.touched"
+            [class.field-valid]="medalForm.get('image')?.valid && medalForm.get('image')?.touched"
+            placeholder="assets/img/badges/..." formControlName="image" />
+          <span class="field-hint error" *ngIf="medalForm.get('image')?.invalid && medalForm.get('image')?.touched">
+            La imagen es obligatoria
+          </span>
+        </div>
+
+        <!-- Fila: Tipo + Valor -->
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="type">
+              <i class="bi bi-tag"></i> Tipo
+            </label>
+            <div class="select-wrap">
+              <select id="type" class="field-input field-select"
+                [class.field-error]="medalForm.get('type')?.invalid && medalForm.get('type')?.touched"
+                [class.field-valid]="medalForm.get('type')?.valid && medalForm.get('type')?.touched"
+                formControlName="type">
+                <option value="" disabled>Selecciona un tipo</option>
+                <option value="cantidad">Cantidad</option>
+                <option value="juego">Juego</option>
+              </select>
+              <i class="bi bi-chevron-down select-arrow"></i>
+            </div>
+            <span class="field-hint error" *ngIf="medalForm.get('type')?.invalid && medalForm.get('type')?.touched">
+              El tipo es obligatorio
+            </span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="value">
+              <i class="bi bi-hash"></i> Valor
+            </label>
+            <input type="number" id="value" min="1" class="field-input field-mono"
+              [class.field-error]="medalForm.get('value')?.invalid && medalForm.get('value')?.touched"
+              [class.field-valid]="medalForm.get('value')?.valid && medalForm.get('value')?.touched"
+              placeholder="ej. 10" formControlName="value" />
+            <span class="field-hint error"
+              *ngIf="medalForm.get('value')?.errors?.['required'] && medalForm.get('value')?.touched">El valor es
+              obligatorio</span>
+            <span class="field-hint error"
+              *ngIf="medalForm.get('value')?.errors?.['min'] && medalForm.get('value')?.touched">Debe ser mayor que
+              0</span>
+            <span class="field-hint error"
+              *ngIf="medalForm.get('value')?.errors?.['pattern'] && medalForm.get('value')?.touched">Debe ser un número
+              entero</span>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="history.back()">
+            <i class="bi bi-arrow-left"></i>
+            Cancelar
+          </button>
+          <button type="submit" class="btn-submit" [disabled]="medalForm.invalid">
+            <i class="bi bi-award"></i>
+            Crear insignia
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
