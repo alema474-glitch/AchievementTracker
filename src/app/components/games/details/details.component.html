@@ -43,7 +43,7 @@
 
       <!-- Game info -->
       <div class="hero-info">
-        <div class="hero-eyebrow" *ngIf="juego.genres.length">
+        <div class="hero-eyebrow" *ngIf="juego.genres?.length">
           @for (genre of juego.genres.slice(0,3); track genre) {
             <span class="genre-chip">{{ genre }}</span>
           }

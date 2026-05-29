@@ -1,35 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Juego } from '../models/juegos.module';
-import { Database, get, listVal, objectVal, ref, set } from '@angular/fire/database';
+import { Database, get, objectVal, ref, set, remove } from '@angular/fire/database';
 import { AuthService } from './auth.service';
 import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class JuegosServiceTsService {
-  constructor(
-    private database: Database,
-    private auth: AuthService
-  ) { }
+  private database = inject(Database);
+  private auth     = inject(AuthService);
 
   getAllUserGamesFirebase(): Observable<Juego[]> {
     const uid = this.auth.getUid();
     if (!uid) return of([]);
-
     const libraryRef = ref(this.database, `/library/${uid}/games`);
-
     return objectVal<Record<string, any> | null>(libraryRef).pipe(
       switchMap((idsObj) => {
         if (!idsObj) return of([]);
         const ids = Object.keys(idsObj);
-
         const gameObservables = ids.map(id =>
           from(get(ref(this.database, `/games/${id}`))).pipe(
-            map(snapshot => snapshot.exists() ? snapshot.val() as Juego : null)
+            map(snapshot => snapshot.exists() ? { ...snapshot.val(), appId: id } as Juego : null)
           )
         );
-
         return combineLatest(gameObservables);
       }),
       map(games => games.filter(g => g !== null) as Juego[])
@@ -38,7 +30,9 @@ export class JuegosServiceTsService {
 
   getGameById(appId: string): Observable<Juego | null> {
     const gameRef = ref(this.database, `/games/${appId}`);
-    return objectVal<Juego | null>(gameRef);
+    return objectVal<Juego | null>(gameRef).pipe(
+      map(g => g ? { ...g, appId } : null)
+    );
   }
 
   getAllGames(): Observable<Juego[]> {
@@ -47,14 +41,10 @@ export class JuegosServiceTsService {
       map(res => {
         if (!res) return [];
         return Object.keys(res).map(id => ({
-          appId: id,
-          name: res[id].name,
-          description: res[id].description,
-          image: res[id].image,
-          genres: res[id].genres || [],
+          appId: id, name: res[id].name, description: res[id].description,
+          image: res[id].image, genres: res[id].genres || [],
           logrosConseguidos: res[id].logrosConseguidos,
-          logrosTotales: res[id].logrosTotales,
-          progreso: res[id].progreso || 0
+          logrosTotales: res[id].logrosTotales, progreso: res[id].progreso || 0
         }));
       })
     );
@@ -62,23 +52,39 @@ export class JuegosServiceTsService {
 
   async addGameToLibrary(juego: Juego): Promise<void> {
     const uid = this.auth.getUid();
-    if (!uid) throw new Error("No hay usuario");
-
-    const gameRef = ref(
-      this.database,
-      `/library/${uid}/games/${juego.appId}`
-    );
-
-    await set(gameRef, true);
+    if (!uid) throw new Error('No hay usuario');
+    await set(ref(this.database, `/library/${uid}/games/${juego.appId}`), {
+      addedAt: new Date().toISOString()
+    });
   }
 
   async addGame(game: Juego): Promise<void> {
-    const gameRef = ref(this.database, `/games/${game.appId}`);
-    await set(gameRef, {
-      name: game.name,
-      description: game.description,
-      image: game.image,
-      genres: game.genres
+    await set(ref(this.database, `/games/${game.appId}`), {
+      name: game.name, description: game.description,
+      image: game.image, genres: game.genres
     });
+  }
+
+  // ── Hidden games ─────────────────────────────────────────────────────────────
+  getHiddenGames(): Observable<Set<string>> {
+    const uid = this.auth.getUid();
+    if (!uid) return of(new Set<string>());
+    return objectVal<Record<string, boolean> | null>(
+      ref(this.database, `/library/${uid}/hidden`)
+    ).pipe(
+      map(res => new Set(res ? Object.keys(res) : []))
+    );
+  }
+
+  async hideGame(appId: string): Promise<void> {
+    const uid = this.auth.getUid();
+    if (!uid) return;
+    await set(ref(this.database, `/library/${uid}/hidden/${appId}`), true);
+  }
+
+  async showGame(appId: string): Promise<void> {
+    const uid = this.auth.getUid();
+    if (!uid) return;
+    await remove(ref(this.database, `/library/${uid}/hidden/${appId}`));
   }
 }

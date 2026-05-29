@@ -1,11 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { JuegosServiceTsService } from '../../services/juegos.service.ts.service';
 import { Juego } from '../../models/juegos.module';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from "@angular/router";
-import { FormsModule } from '@angular/forms';
 import { LogrosService } from '../../services/logros.service';
-import { take } from 'rxjs';
+import { take, combineLatest } from 'rxjs';
+
+type SortMode = 'nombre' | 'progreso-asc' | 'progreso-desc' | 'reciente';
+
+interface JuegoEnriquecido extends Juego {
+  logrosConseguidos: number;
+  logrosTotales: number;
+  progreso: number;
+  addedAt?: string;
+  hidden?: boolean;
+}
+
+interface GenreStats {
+  genre: string;
+  count: number;
+  totalLogros: number;
+  conseguidos: number;
+  pct: number;
+}
 
 @Component({
   selector: 'app-games',
@@ -14,111 +32,126 @@ import { take } from 'rxjs';
   styleUrl: './games.component.scss'
 })
 export class GamesComponent implements OnInit {
+  private juegosService = inject(JuegosServiceTsService);
+  private achService    = inject(LogrosService);
 
-  constructor(private juegos: JuegosServiceTsService, private achService: LogrosService) {
+  // ── Raw data ─────────────────────────────────────────────────────────────────
+  juegosTotal:  JuegoEnriquecido[] = [];
+  hiddenIds:    Set<string> = new Set();
+  mostrarOcultos = false;
 
-  }
-
-  juegosTotal: Juego[] = []
-  juegosFiltrados: Juego[] = []
-
-  totalLogros = 0;
+  // ── Global stats ──────────────────────────────────────────────────────────────
+  totalLogros       = 0;
   logrosConseguidos = 0;
-  progresoTotal = 0; // porcentaje
+  progresoTotal     = 0;
+  genreStats:       GenreStats[] = [];
 
+  // ── Filters / sort ────────────────────────────────────────────────────────────
+  busqueda             = '';
+  sortMode: SortMode   = 'nombre';
   categoriasDisponibles: string[] = [];
   categoriasSeleccionadas: string[] = [];
 
+  // ── Computed list (visible) ───────────────────────────────────────────────────
+  get juegosFiltrados(): JuegoEnriquecido[] {
+    let lista = this.juegosTotal.filter(j =>
+      this.mostrarOcultos ? this.hiddenIds.has(j.appId) : !this.hiddenIds.has(j.appId)
+    );
+
+    if (this.busqueda.trim()) {
+      const q = this.busqueda.toLowerCase();
+      lista = lista.filter(j => j.name.toLowerCase().includes(q));
+    }
+
+    if (this.categoriasSeleccionadas.length) {
+      lista = lista.filter(j =>
+        j.genres?.some((c: string) => this.categoriasSeleccionadas.includes(c))
+      );
+    }
+
+    switch (this.sortMode) {
+      case 'progreso-desc': return [...lista].sort((a, b) => b.progreso - a.progreso);
+      case 'progreso-asc':  return [...lista].sort((a, b) => a.progreso - b.progreso);
+      case 'reciente':      return [...lista].sort((a, b) =>
+        (b.addedAt ?? '').localeCompare(a.addedAt ?? ''));
+      default:              return [...lista].sort((a, b) => a.name.localeCompare(b.name));
+    }
+  }
+
+  get hiddenCount(): number { return this.hiddenIds.size; }
+
   ngOnInit() {
-    // Suscribirse a los juegos en tiempo real
-    this.juegos.getAllUserGamesFirebase().subscribe({
-      next: (juego) => {
-        this.juegosTotal = juego;
-        this.juegosFiltrados = [...this.juegosTotal];
+    combineLatest([
+      this.juegosService.getAllUserGamesFirebase(),
+      this.juegosService.getHiddenGames()
+    ]).subscribe(([juegos, hidden]) => {
+      this.hiddenIds = hidden;
+      this.juegosTotal = juegos as JuegoEnriquecido[];
 
-        let totalConseguidos = 0;
-        let totalLogros = 0;
+      const cats = new Set<string>();
+      juegos.forEach(j => j.genres?.forEach((c: string) => cats.add(c)));
+      this.categoriasDisponibles = Array.from(cats).sort();
 
-        const categoriasSet = new Set<string>();
+      let totalC = 0, totalL = 0;
+      const genreMap = new Map<string, { count: number; tL: number; tC: number }>();
 
-        this.juegosTotal.forEach(juego => {
-          if (juego.genres) {
-            juego.genres.forEach((c: string) => categoriasSet.add(c));
-          }
-        });
+      juegos.forEach(j => {
+        this.achService.getAchievementsUser(j.appId).pipe(take(1)).subscribe(achArray => {
+          const cons = achArray.filter(a => a.conseguido).length;
+          const jEnr = j as JuegoEnriquecido;
+          jEnr.logrosConseguidos = cons;
+          jEnr.logrosTotales     = achArray.length;
+          jEnr.progreso          = achArray.length ? (cons / achArray.length) * 100 : 0;
 
-        this.categoriasDisponibles = Array.from(categoriasSet).sort();
+          totalC += cons; totalL += achArray.length;
+          this.logrosConseguidos = totalC;
+          this.totalLogros       = totalL;
+          this.progresoTotal     = totalL ? (totalC / totalL) * 100 : 0;
 
-        console.log("Categorias detectadas:", this.categoriasDisponibles);
-
-        juego.forEach(juego => {
-          this.achService.getAchievementsUser(juego.appId).pipe(take(1)).subscribe(achArray => {
-            const conseguidos = achArray.filter(a => a.conseguido).length;
-
-            // Guardar progreso individual
-            juego.logrosConseguidos = conseguidos;
-            juego.logrosTotales = achArray.length;
-            juego.progreso = achArray.length ? (conseguidos / achArray.length) * 100 : 0;
-
-            // Para progreso global
-            totalConseguidos += conseguidos;
-            totalLogros += achArray.length;
-
-            // Actualizar progreso total
-            this.logrosConseguidos = totalConseguidos;
-            this.totalLogros = totalLogros;
-            this.progresoTotal = totalLogros ? (totalConseguidos / totalLogros) * 100 : 0;
+          // Genre stats
+          (j.genres ?? []).forEach((g: string) => {
+            const cur = genreMap.get(g) ?? { count: 0, tL: 0, tC: 0 };
+            genreMap.set(g, {
+              count: cur.count + 1,
+              tL: cur.tL + achArray.length,
+              tC: cur.tC + cons
+            });
           });
+
+          this.genreStats = Array.from(genreMap.entries())
+            .map(([genre, d]) => ({
+              genre, count: d.count, totalLogros: d.tL, conseguidos: d.tC,
+              pct: d.tL ? Math.round((d.tC / d.tL) * 100) : 0
+            }))
+            .sort((a, b) => b.pct - a.pct);
         });
-      },
-      error: (err) => {
-        console.error('Error al cargar juegos de Firebase:', err);
-      }
+      });
     });
   }
 
-  mostrarTexto(event: Event): void {
-    const entrada = event.target as HTMLInputElement;
-    const nombre = entrada.value.toLowerCase().trim();
+  // ── Actions ──────────────────────────────────────────────────────────────────
+  toggleCategoria(cat: string) {
+    this.categoriasSeleccionadas = this.categoriasSeleccionadas.includes(cat)
+      ? this.categoriasSeleccionadas.filter(c => c !== cat)
+      : [...this.categoriasSeleccionadas, cat];
+  }
 
-    if (nombre === '') {
-      this.juegosFiltrados = [...this.juegosTotal];
+  async toggleHide(j: JuegoEnriquecido) {
+    if (this.hiddenIds.has(j.appId)) {
+      await this.juegosService.showGame(j.appId);
+      this.hiddenIds.delete(j.appId);
     } else {
-      this.juegosFiltrados = this.juegosTotal.filter(j =>
-        j.name.toLowerCase().includes(nombre)
-      );
+      await this.juegosService.hideGame(j.appId);
+      this.hiddenIds.add(j.appId);
     }
+    this.hiddenIds = new Set(this.hiddenIds); // trigger change detection
   }
 
-  toggleCategoria(categoria: string) {
-    if (this.categoriasSeleccionadas.includes(categoria)) {
-      this.categoriasSeleccionadas =
-        this.categoriasSeleccionadas.filter(c => c !== categoria);
-    } else {
-      this.categoriasSeleccionadas.push(categoria);
-    }
-
-    console.log("Categorías seleccionadas:", this.categoriasSeleccionadas);
-
-    this.filtrarJuegos();
+  mostrarTexto(event: Event) {
+    this.busqueda = (event.target as HTMLInputElement).value;
   }
 
-  // Filtrar juegos
-  filtrarJuegos() {
+  setSortMode(m: SortMode) { this.sortMode = m; }
 
-    if (this.categoriasSeleccionadas.length === 0) {
-      this.juegosFiltrados = [...this.juegosTotal];
-      return;
-    }
-
-    this.juegosFiltrados = this.juegosTotal.filter(juego =>
-      juego.genres?.some((cat: string) =>
-        this.categoriasSeleccionadas.includes(cat)
-      )
-    );
-
-    console.log("Juegos filtrados:", this.juegosFiltrados);
-
-  }
-
+  getGenreBarWidth(pct: number): string { return `${pct}%`; }
 }
