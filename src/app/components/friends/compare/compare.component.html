@@ -5,89 +5,108 @@
   </a>
 
   @if (loading()) {
-    <div class="loading-state"><div class="spinner-ring"></div><span>Comparando datos…</span></div>
+    <div class="loading-state">
+      <div class="spinner-ring"></div>
+      <span>Analizando estadísticas…</span>
+    </div>
   } @else {
 
-  <div class="page-header">
+  <!-- Hero -->
+  <div class="compare-hero">
     <p class="page-eyebrow"><span class="eyebrow-dot"></span>Comparativa</p>
     <h1 class="page-title">Tú vs <span class="title-accent">{{ friendProfile()?.username }}</span></h1>
   </div>
 
-  <!-- Head-to-head overview -->
-  <div class="head2head-card">
-    <!-- Me -->
-    <div class="h2h-player" [class.h2h-winner]="winner() === 'me'">
-      @if (myProfile()?.photoURL) {
-        <img [src]="myProfile().photoURL" class="h2h-avatar" alt="me" />
-      } @else {
-        <div class="h2h-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
-      }
-      <span class="h2h-name">{{ myProfile()?.username }}</span>
-      <span class="h2h-pct">{{ myGlobalPct() }}%</span>
-      <span class="h2h-detail">{{ myStats().done }} logros &bull; {{ myStats().games }} juegos</span>
-      @if (winner() === 'me') { <span class="h2h-crown"><i class="bi bi-trophy-fill"></i></span> }
-    </div>
+  <!-- Head 2 head -->
+  <div class="h2h-section">
+    <div class="head2head-card">
 
-    <!-- VS divider -->
-    <div class="h2h-vs">
-      <span class="vs-text">VS</span>
-      <span class="vs-shared">{{ sharedGames() }} juegos compartidos</span>
-    </div>
+      <!-- Me -->
+      <div class="h2h-player" [class.h2h-winner]="winner() === 'me'">
+        @if (winner() === 'me') { <span class="h2h-crown"><i class="bi bi-trophy-fill"></i></span> }
+        @if (myProfile()?.photoURL) {
+          <img [src]="myProfile().photoURL" class="h2h-avatar" alt="me" />
+        } @else {
+          <div class="h2h-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+        }
+        <span class="h2h-name">{{ myProfile()?.username }}</span>
+        <span class="h2h-pct">{{ myGlobalPct() }}%</span>
+        <span class="h2h-detail">{{ myStats().done }} logros &bull; {{ myStats().games }} juegos</span>
+      </div>
 
-    <!-- Friend -->
-    <div class="h2h-player" [class.h2h-winner]="winner() === 'friend'">
-      @if (friendProfile()?.photoURL) {
-        <img [src]="friendProfile().photoURL" class="h2h-avatar" alt="friend" />
-      } @else {
-        <div class="h2h-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
-      }
-      <span class="h2h-name">{{ friendProfile()?.username }}</span>
-      <span class="h2h-pct">{{ friendGlobalPct() }}%</span>
-      <span class="h2h-detail">{{ friendStats().done }} logros &bull; {{ friendStats().games }} juegos</span>
-      @if (winner() === 'friend') { <span class="h2h-crown"><i class="bi bi-trophy-fill"></i></span> }
+      <!-- VS -->
+      <div class="h2h-vs">
+        <span class="vs-text">VS</span>
+        <span class="vs-shared">{{ sharedGames() }} compartidos</span>
+        @if (winner() === 'tie') { <span class="vs-tie">Empate</span> }
+      </div>
+
+      <!-- Friend -->
+      <div class="h2h-player" [class.h2h-winner]="winner() === 'friend'">
+        @if (winner() === 'friend') { <span class="h2h-crown"><i class="bi bi-trophy-fill"></i></span> }
+        @if (friendProfile()?.photoURL) {
+          <img [src]="friendProfile().photoURL" class="h2h-avatar" alt="friend" />
+        } @else {
+          <div class="h2h-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+        }
+        <span class="h2h-name">{{ friendProfile()?.username }}</span>
+        <span class="h2h-pct">{{ friendGlobalPct() }}%</span>
+        <span class="h2h-detail">{{ friendStats().done }} logros &bull; {{ friendStats().games }} juegos</span>
+      </div>
+
     </div>
   </div>
 
-  <!-- Per-game comparison -->
-  @if (comparisons().length === 0) {
-    <div class="empty-state">
-      <div class="empty-icon"><i class="bi bi-controller"></i></div>
-      <h3>Sin juegos para comparar</h3>
-    </div>
-  } @else {
-    <section class="section">
-      <h2 class="section-title"><i class="bi bi-bar-chart-line-fill section-icon"></i> Juego a juego</h2>
-      <div class="game-comparisons">
-        @for (cmp of comparisons(); track cmp.appId) {
-          <div class="cmp-card">
-            <div class="cmp-header">
-              <img [src]="cmp.image" [alt]="cmp.name" class="cmp-img" />
-              <span class="cmp-name">{{ cmp.name }}</span>
-              <span class="cmp-total">{{ cmp.total }} logros</span>
-            </div>
-            <div class="cmp-bars">
-              <!-- My bar -->
-              <div class="cmp-bar-row">
-                <span class="cmp-bar-label cmp-bar-label--me">Tú</span>
-                <div class="cmp-bar-track">
-                  <div class="cmp-bar-fill cmp-bar-fill--me" [style.width.%]="cmp.myPct" [class.winning]="cmp.myPct > cmp.friendPct"></div>
-                </div>
-                <span class="cmp-bar-val" [class.win-val]="cmp.myPct > cmp.friendPct">{{ cmp.myDone }}/{{ cmp.total }}</span>
-              </div>
-              <!-- Friend bar -->
-              <div class="cmp-bar-row">
-                <span class="cmp-bar-label cmp-bar-label--friend">{{ friendProfile()?.username | slice:0:8 }}</span>
-                <div class="cmp-bar-track">
-                  <div class="cmp-bar-fill cmp-bar-fill--friend" [style.width.%]="cmp.friendPct" [class.winning]="cmp.friendPct > cmp.myPct"></div>
-                </div>
-                <span class="cmp-bar-val" [class.win-val]="cmp.friendPct > cmp.myPct">{{ cmp.friendDone }}/{{ cmp.total }}</span>
-              </div>
-            </div>
-          </div>
-        }
+  <!-- Per-game -->
+  <div class="content-area">
+    @if (comparisons().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-controller"></i></div>
+        <h3>Sin juegos para comparar</h3>
       </div>
-    </section>
-  }
+    } @else {
+      <section class="section">
+        <h2 class="section-title">
+          <i class="bi bi-bar-chart-line-fill section-icon"></i> Juego a juego
+        </h2>
+        <div class="game-comparisons">
+          @for (cmp of comparisons(); track cmp.appId) {
+            <div class="cmp-card">
+              <div class="cmp-header">
+                <img [src]="cmp.image" [alt]="cmp.name" class="cmp-img" />
+                <span class="cmp-name">{{ cmp.name }}</span>
+                <span class="cmp-total">{{ cmp.total }} logros</span>
+              </div>
+              <div class="cmp-bars">
+                <div class="cmp-bar-row">
+                  <span class="cmp-bar-label cmp-bar-label--me">Tú</span>
+                  <div class="cmp-bar-track">
+                    <div class="cmp-bar-fill cmp-bar-fill--me"
+                         [style.width.%]="cmp.myPct"
+                         [class.winning]="cmp.myPct > cmp.friendPct"></div>
+                  </div>
+                  <span class="cmp-bar-val" [class.win-val]="cmp.myPct > cmp.friendPct">
+                    {{ cmp.myDone }}/{{ cmp.total }}
+                  </span>
+                </div>
+                <div class="cmp-bar-row">
+                  <span class="cmp-bar-label cmp-bar-label--friend">{{ friendProfile()?.username | slice:0:8 }}</span>
+                  <div class="cmp-bar-track">
+                    <div class="cmp-bar-fill cmp-bar-fill--friend"
+                         [style.width.%]="cmp.friendPct"
+                         [class.winning]="cmp.friendPct > cmp.myPct"></div>
+                  </div>
+                  <span class="cmp-bar-val" [class.win-val]="cmp.friendPct > cmp.myPct">
+                    {{ cmp.friendDone }}/{{ cmp.total }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
 
   }
 </div>

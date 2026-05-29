@@ -4,11 +4,6 @@
     <i class="bi bi-arrow-left"></i> Amigos
   </a>
 
-  <div class="page-header">
-    <p class="page-eyebrow"><span class="eyebrow-dot"></span>Clasificación</p>
-    <h1 class="page-title">Ranking de <span class="title-accent">Amigos</span></h1>
-  </div>
-
   @if (loading()) {
     <div class="loading-state">
       <div class="spinner-ring"></div>
@@ -22,103 +17,112 @@
     </div>
   } @else {
 
+  <div class="page-hero">
+    <p class="page-eyebrow"><span class="eyebrow-dot"></span>Clasificación</p>
+    <h1 class="page-title">Ranking de <span class="title-accent">Amigos</span></h1>
+  </div>
+
   <!-- Podium top 3 -->
   @if (ranking().length >= 3) {
-    <div class="podium">
-      <!-- 2nd -->
-      <div class="podium-slot podium-slot--2">
-        <div class="podium-avatar-ring podium-ring--2">
-          @if (ranking()[1].photoURL) {
-            <img [src]="ranking()[1].photoURL" [alt]="ranking()[1].username" class="podium-avatar" />
-          } @else {
-            <div class="podium-placeholder"><i class="bi bi-person-fill"></i></div>
-          }
-        </div>
-        <span class="podium-crown podium-crown--2"><i class="bi bi-award-fill"></i></span>
-        <span class="podium-name">{{ ranking()[1].username }}</span>
-        <span class="podium-val">{{ ranking()[1].totalDone }}</span>
-        <div class="podium-base podium-base--2"></div>
-      </div>
+    <div class="podium-section">
+      <div class="podium">
 
-      <!-- 1st -->
-      <div class="podium-slot podium-slot--1">
-        <span class="podium-crown podium-crown--1"><i class="bi bi-trophy-fill"></i></span>
-        <div class="podium-avatar-ring podium-ring--1">
-          @if (ranking()[0].photoURL) {
-            <img [src]="ranking()[0].photoURL" [alt]="ranking()[0].username" class="podium-avatar podium-avatar--1" />
-          } @else {
-            <div class="podium-placeholder podium-placeholder--1"><i class="bi bi-person-fill"></i></div>
-          }
+        <!-- 2nd place -->
+        <div class="podium-slot podium-slot--2">
+          <span class="podium-crown podium-crown--2"><i class="bi bi-award-fill"></i></span>
+          <div class="podium-ring ring--2">
+            @if (ranking()[1].photoURL) {
+              <img [src]="ranking()[1].photoURL" [alt]="ranking()[1].username" class="podium-avatar podium-avatar--md" />
+            } @else {
+              <div class="podium-placeholder podium-placeholder--md"><i class="bi bi-person-fill"></i></div>
+            }
+          </div>
+          <span class="podium-name">{{ ranking()[1].username }}</span>
+          <span class="podium-val">{{ ranking()[1].totalDone }}</span>
+          <div class="podium-base podium-base--2"></div>
         </div>
-        <span class="podium-name">{{ ranking()[0].username }}</span>
-        <span class="podium-val">{{ ranking()[0].totalDone }}</span>
-        <div class="podium-base podium-base--1"></div>
-      </div>
 
-      <!-- 3rd -->
-      <div class="podium-slot podium-slot--3">
-        <div class="podium-avatar-ring podium-ring--3">
-          @if (ranking()[2].photoURL) {
-            <img [src]="ranking()[2].photoURL" [alt]="ranking()[2].username" class="podium-avatar" />
-          } @else {
-            <div class="podium-placeholder"><i class="bi bi-person-fill"></i></div>
-          }
+        <!-- 1st place -->
+        <div class="podium-slot podium-slot--1">
+          <span class="podium-crown podium-crown--1"><i class="bi bi-trophy-fill"></i></span>
+          <div class="podium-ring ring--1">
+            @if (ranking()[0].photoURL) {
+              <img [src]="ranking()[0].photoURL" [alt]="ranking()[0].username" class="podium-avatar podium-avatar--lg" />
+            } @else {
+              <div class="podium-placeholder podium-placeholder--lg"><i class="bi bi-person-fill"></i></div>
+            }
+          </div>
+          <span class="podium-name">{{ ranking()[0].username }}</span>
+          <span class="podium-val">{{ ranking()[0].totalDone }}</span>
+          <div class="podium-base podium-base--1"></div>
         </div>
-        <span class="podium-crown podium-crown--3"><i class="bi bi-patch-check-fill"></i></span>
-        <span class="podium-name">{{ ranking()[2].username }}</span>
-        <span class="podium-val">{{ ranking()[2].totalDone }}</span>
-        <div class="podium-base podium-base--3"></div>
+
+        <!-- 3rd place -->
+        <div class="podium-slot podium-slot--3">
+          <span class="podium-crown podium-crown--3"><i class="bi bi-patch-check-fill"></i></span>
+          <div class="podium-ring ring--3">
+            @if (ranking()[2].photoURL) {
+              <img [src]="ranking()[2].photoURL" [alt]="ranking()[2].username" class="podium-avatar podium-avatar--md" />
+            } @else {
+              <div class="podium-placeholder podium-placeholder--md"><i class="bi bi-person-fill"></i></div>
+            }
+          </div>
+          <span class="podium-name">{{ ranking()[2].username }}</span>
+          <span class="podium-val">{{ ranking()[2].totalDone }}</span>
+          <div class="podium-base podium-base--3"></div>
+        </div>
+
       </div>
     </div>
   }
 
-  <!-- Full ranking list -->
-  <div class="ranking-list">
-    @for (entry of ranking(); track entry.uid; let i = $index) {
-      <div class="rank-row" [class.rank-row--me]="entry.isMe">
-        <!-- Position -->
-        <div class="rank-pos">
-          @if (i < 3) {
-            <i class="bi" [class]="getRankIcon(i)" [style.color]="getRankColor(i)"></i>
-          } @else {
-            <span class="rank-num">{{ i + 1 }}</span>
-          }
-        </div>
+  <!-- Full list -->
+  <div class="ranking-section">
+    <div class="ranking-list">
+      @for (entry of ranking(); track entry.uid; let i = $index) {
+        <div class="rank-row" [class.rank-row--me]="entry.isMe">
 
-        <!-- Avatar -->
-        <div class="rank-avatar-wrap">
-          @if (entry.photoURL) {
-            <img [src]="entry.photoURL" [alt]="entry.username" class="rank-avatar" />
-          } @else {
-            <div class="rank-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
-          }
-        </div>
-
-        <!-- Info -->
-        <div class="rank-info">
-          <span class="rank-username">
-            {{ entry.username }}
-            @if (entry.isMe) { <span class="me-badge">tú</span> }
-          </span>
-          <div class="rank-bar-track">
-            <div class="rank-bar-fill" [style.width.%]="entry.pct" [class.rank-bar--me]="entry.isMe"></div>
+          <div class="rank-pos">
+            @if (getRankIcon(i)) {
+              <i class="bi" [class]="getRankIcon(i)" [style.color]="getRankColor(i)"></i>
+            } @else {
+              <span class="rank-num">{{ i + 1 }}</span>
+            }
           </div>
-        </div>
 
-        <!-- Stats -->
-        <div class="rank-stats">
-          <span class="rank-done">{{ entry.totalDone }}</span>
-          <span class="rank-label">logros</span>
-          <span class="rank-pct">{{ entry.pct }}%</span>
-        </div>
+          <div class="rank-avatar-wrap">
+            @if (entry.photoURL) {
+              <img [src]="entry.photoURL" [alt]="entry.username" class="rank-avatar" />
+            } @else {
+              <div class="rank-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+            }
+          </div>
 
-        @if (!entry.isMe) {
-          <a [routerLink]="['/nav/friends/compare', entry.uid]" class="rank-compare-btn">
-            <i class="bi bi-bar-chart-line-fill"></i>
-          </a>
-        }
-      </div>
-    }
+          <div class="rank-info">
+            <span class="rank-username">
+              {{ entry.username }}
+              @if (entry.isMe) { <span class="me-badge">tú</span> }
+            </span>
+            <div class="rank-bar-track">
+              <div class="rank-bar-fill" [style.width.%]="entry.pct"></div>
+            </div>
+          </div>
+
+          <div class="rank-stats">
+            <span class="rank-done">{{ entry.totalDone }}</span>
+            <span class="rank-label">logros</span>
+            <span class="rank-pct">{{ entry.pct }}%</span>
+          </div>
+
+          @if (!entry.isMe) {
+            <a [routerLink]="['/nav/friends/compare', entry.uid]" class="rank-compare-btn" title="Comparar">
+              <i class="bi bi-bar-chart-line-fill"></i>
+            </a>
+          }
+
+        </div>
+      }
+    </div>
   </div>
 
   }
