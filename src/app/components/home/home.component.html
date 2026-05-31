@@ -1,3 +1,7 @@
+@if (showOnboarding()) {
+  <app-onboarding (dismissed)="showOnboarding.set(false)" />
+}
+
 <div class="home-page">
 
   <!-- ══════════════════════════════════════════

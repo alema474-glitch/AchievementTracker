@@ -1,0 +1,139 @@
+@keyframes fadeIn    { from{opacity:0} to{opacity:1} }
+@keyframes panelIn   { from{opacity:0;transform:translateY(28px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes iconFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes ringPulse { 0%,100%{opacity:.35;transform:scale(1)} 50%{opacity:.7;transform:scale(1.08)} }
+@keyframes ringPulse2{ 0%,100%{opacity:.15;transform:scale(1)} 50%{opacity:.4;transform:scale(1.14)} }
+@keyframes stepSlide { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+@keyframes shimmer   { from{background-position:-200% center} to{background-position:200% center} }
+
+.ob-backdrop {
+  position: fixed; inset: 0; z-index: 3000;
+  background: rgba(0,0,0,.8); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: fadeIn .3s ease;
+}
+
+.ob-panel {
+  position: relative;
+  background: var(--surface, rgb(24,24,24));
+  border: 1px solid var(--border-soft);
+  border-radius: 24px;
+  padding: 40px 36px 32px;
+  width: 100%; max-width: 440px;
+  display: flex; flex-direction: column; align-items: center; gap: 24px;
+  text-align: center;
+  animation: panelIn .45s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 40px 100px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04);
+
+  &::before {
+    content: '';
+    position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ob-color, var(--accent)), transparent);
+    opacity: .5;
+  }
+}
+
+.ob-skip {
+  position: absolute; top: 16px; right: 16px;
+  background: transparent; border: none;
+  color: var(--fg-faint); font-family: 'DM Sans', sans-serif;
+  font-size: .75rem; cursor: pointer; padding: 6px 12px; border-radius: 8px;
+  transition: color .2s, background .2s;
+  &:hover { color: var(--fg-muted); background: rgba(255,255,255,.05); }
+}
+
+// ── Step dots ──────────────────────────────────────────────────────────────────
+.ob-dots { display: flex; gap: 8px; align-items: center; }
+.ob-dot {
+  width: 8px; height: 8px; border-radius: 99px;
+  background: var(--surface-3); border: none; cursor: pointer;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  &--active {
+    width: 24px; background: var(--ob-color, var(--accent));
+    box-shadow: 0 0 8px var(--ob-color, var(--accent-glow));
+  }
+  &--done { background: rgba(255,255,255,.15); }
+}
+
+// ── Icon ───────────────────────────────────────────────────────────────────────
+.ob-icon-wrap {
+  position: relative; width: 100px; height: 100px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ob-icon-ring {
+  position: absolute; border-radius: 50%; border: 1px solid var(--ob-color, var(--accent));
+  &--outer { inset: 0; animation: ringPulse 2.5s ease-in-out infinite; }
+  &--inner { inset: -14px; animation: ringPulse2 2.5s ease-in-out infinite .5s; }
+}
+.ob-icon-bg {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: color-mix(in srgb, var(--ob-color, var(--accent)) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ob-color, var(--accent)) 30%, transparent);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+}
+.ob-icon {
+  font-size: 2rem;
+  animation: iconFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px var(--ob-color, var(--accent)));
+}
+
+// ── Text ───────────────────────────────────────────────────────────────────────
+.ob-text { animation: stepSlide .35s ease; }
+.ob-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  letter-spacing: .05em; color: var(--fg);
+  margin: 0 0 10px; line-height: 1.1;
+}
+.ob-desc {
+  font-size: .9rem; color: var(--fg-muted);
+  line-height: 1.6; margin: 0; max-width: 320px;
+}
+
+// ── Progress ───────────────────────────────────────────────────────────────────
+.ob-progress-track {
+  width: 100%; height: 4px;
+  background: var(--surface-3); border-radius: 99px; overflow: hidden;
+}
+.ob-progress-fill {
+  height: 100%; border-radius: 99px;
+  transition: width .5s cubic-bezier(.4,0,.2,1), background .4s;
+  background-size: 200% auto;
+  animation: shimmer 2.5s linear infinite;
+}
+
+// ── Actions ────────────────────────────────────────────────────────────────────
+.ob-actions {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+  width: 100%;
+}
+.ob-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 20px; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: .86rem; font-weight: 600;
+  cursor: pointer; transition: all .2s; border: none;
+  i { font-size: .9rem; }
+
+  &--ghost {
+    background: var(--surface-3); border: 1px solid var(--border-soft); color: var(--fg-muted);
+    padding: 11px 14px;
+    &:hover { color: var(--fg); border-color: var(--border); }
+  }
+  &--action {
+    background: color-mix(in srgb, var(--ob-color) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ob-color) 30%, transparent);
+    color: var(--ob-color);
+    &:hover { background: color-mix(in srgb, var(--ob-color) 20%, transparent); transform: translateY(-1px); }
+  }
+  &--next {
+    background: var(--ob-color, var(--accent)); color: #000;
+    box-shadow: 0 4px 18px color-mix(in srgb, var(--ob-color, var(--accent)) 40%, transparent);
+    &:hover { opacity: .88; transform: translateY(-2px); box-shadow: 0 8px 26px color-mix(in srgb, var(--ob-color, var(--accent)) 50%, transparent); }
+  }
+}
+
+.ob-counter {
+  font-size: .7rem; color: var(--fg-faint); letter-spacing: .1em;
+}

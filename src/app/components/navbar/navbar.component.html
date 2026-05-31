@@ -162,7 +162,9 @@
        MAIN CONTENT
   ═══════════════════════════════════════════ -->
   <main class="main-content">
-    <router-outlet></router-outlet>
+    <div class="outlet-wrap" [class.outlet-wrap--in]="routeAnimating()">
+      <router-outlet></router-outlet>
+    </div>
   </main>
 
   <!-- ═══════════════════════════════════════════

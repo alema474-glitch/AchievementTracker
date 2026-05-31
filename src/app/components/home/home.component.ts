@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Juego } from '../../models/juegos.module';
 import { JuegosServiceTsService } from '../../services/juegos.service.ts.service';
 import { CommonModule } from '@angular/common';
+import { OnboardingComponent } from '../onboarding/onboarding.component';
 import { RouterLink } from "@angular/router";
 import { forkJoin, map, take } from 'rxjs';
 import { LogrosService } from '../../services/logros.service';
@@ -10,13 +11,14 @@ import { Database, objectVal, ref } from '@angular/fire/database';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, OnboardingComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
 
   juegosDestacados: Juego[] = [];
+  showOnboarding = signal(false);
   juegosMenosDestacados: Juego[] = [];
   insigniasActuales: any[] = [];
 
@@ -37,6 +39,7 @@ export class HomeComponent implements OnInit {
 
       this.juegosDestacados = [];
       this.juegosMenosDestacados = [];
+      if (juegos.length === 0) { this.showOnboarding.set(true); }
 
       let juegosProcesados = 0;
 

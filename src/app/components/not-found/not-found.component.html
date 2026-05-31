@@ -1,0 +1,48 @@
+<div class="nf-page">
+
+  <!-- Ambient grid -->
+  <div class="nf-grid"></div>
+
+  <!-- Glitch number -->
+  <div class="nf-hero">
+    <div class="glitch-wrap">
+      <span class="glitch" data-text="404">404</span>
+    </div>
+    <div class="nf-scan-line"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="nf-content">
+    <div class="nf-icon-ring">
+      <i class="bi bi-trophy-fill nf-trophy"></i>
+      <div class="nf-ring nf-ring--1"></div>
+      <div class="nf-ring nf-ring--2"></div>
+    </div>
+
+    <h1 class="nf-title">Página no encontrada</h1>
+    <p class="nf-desc">
+      Este logro no existe… o ya lo has desbloqueado en otro lugar.
+    </p>
+
+    <div class="nf-actions">
+      @if (isLoggedIn()) {
+        <a routerLink="/nav/home" class="nf-btn nf-btn--primary">
+          <i class="bi bi-house-fill"></i>
+          Volver al inicio
+        </a>
+        <a routerLink="/nav/games" class="nf-btn nf-btn--ghost">
+          <i class="bi bi-controller"></i>
+          Mi biblioteca
+        </a>
+      } @else {
+        <a routerLink="/welcome" class="nf-btn nf-btn--primary">
+          <i class="bi bi-house-fill"></i>
+          Ir al inicio
+        </a>
+      }
+    </div>
+
+    <p class="nf-code">ERROR_CODE: <span>ACHIEVEMENT_LOCKED</span></p>
+  </div>
+
+</div>

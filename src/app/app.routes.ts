@@ -23,6 +23,7 @@ import { RankingComponent } from './components/friends/ranking/ranking.component
 import { ChatComponent } from './components/friends/chat/chat.component';
 import { FeedComponent } from './components/feed/feed.component';
 import { ChallengesComponent } from './components/challenges/challenges.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/welcome', pathMatch: 'full' },
@@ -58,4 +59,5 @@ export const routes: Routes = [
   { path: 'login',            component: LoginComponent },
   { path: 'signin',           component: SigninComponent },
   { path: 'complete-profile', component: CompleteProfileComponent },
+  { path: '**', component: NotFoundComponent },
 ];

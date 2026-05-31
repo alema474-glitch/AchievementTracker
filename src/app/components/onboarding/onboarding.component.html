@@ -1,0 +1,65 @@
+<div class="ob-backdrop">
+  <div class="ob-panel">
+
+    <!-- Close -->
+    <button class="ob-skip" (click)="skip()">Saltar</button>
+
+    <!-- Step indicators -->
+    <div class="ob-dots">
+      @for (s of steps; track $index) {
+        <button
+          class="ob-dot"
+          [class.ob-dot--active]="$index === step()"
+          [class.ob-dot--done]="$index < step()"
+          (click)="step.set($index)">
+        </button>
+      }
+    </div>
+
+    <!-- Icon -->
+    <div class="ob-icon-wrap" [style.--ob-color]="currentStep.color">
+      <div class="ob-icon-ring ob-icon-ring--outer"></div>
+      <div class="ob-icon-ring ob-icon-ring--inner"></div>
+      <div class="ob-icon-bg">
+        <i class="bi ob-icon" [class]="currentStep.icon" [style.color]="currentStep.color"></i>
+      </div>
+    </div>
+
+    <!-- Text -->
+    <div class="ob-text">
+      <h2 class="ob-title">{{ currentStep.title }}</h2>
+      <p class="ob-desc">{{ currentStep.desc }}</p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="ob-progress-track">
+      <div class="ob-progress-fill" [style.width.%]="progress" [style.background]="currentStep.color"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="ob-actions">
+      @if (step() > 0) {
+        <button class="ob-btn ob-btn--ghost" (click)="prev()">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+      }
+
+      @if (currentStep.action) {
+        <button class="ob-btn ob-btn--action" [style.--ob-color]="currentStep.color"
+                (click)="goAction(currentStep.action!.route)">
+          {{ currentStep.action!.label }}
+          <i class="bi bi-arrow-right"></i>
+        </button>
+      }
+
+      <button class="ob-btn ob-btn--next" [style.--ob-color]="currentStep.color" (click)="next()">
+        @if (isLast) { <i class="bi bi-check-lg"></i> ¡Comenzar! }
+        @else        { Siguiente <i class="bi bi-arrow-right"></i> }
+      </button>
+    </div>
+
+    <!-- Step counter -->
+    <span class="ob-counter">{{ step() + 1 }} / {{ steps.length }}</span>
+
+  </div>
+</div>
