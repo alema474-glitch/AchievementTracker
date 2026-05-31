@@ -1,0 +1,183 @@
+<div class="profile-page">
+
+  <!-- Ambient backdrop -->
+  @if (pinnedGame()) {
+    <div class="backdrop-wrap">
+      <img [src]="'https://cdn.cloudflare.steamstatic.com/steam/apps/' + pinnedGame()!.appId + '/library_hero.jpg'"
+           class="backdrop-img" alt="" (error)="$any($event.target).style.display='none'" />
+      <div class="backdrop-overlay"></div>
+    </div>
+  }
+
+  @if (!profile()) {
+    <div class="loading-state"><div class="spinner-ring"></div></div>
+  } @else {
+
+  <!-- ── Hero section ─────────────────────────────────────────────────────── -->
+  <div class="profile-hero">
+    <!-- Avatar + level ring -->
+    <div class="avatar-section">
+      <div class="avatar-outer-ring" [style.--level-color]="level()?.color ?? 'var(--accent)'">
+        <div class="avatar-inner">
+          @if (profile().photoURL) {
+            <img [src]="profile().photoURL" alt="avatar" class="avatar-img" />
+          } @else {
+            <div class="avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+          }
+        </div>
+      </div>
+      @if (level()) {
+        <div class="level-badge" [style.background]="level()!.color + '22'" [style.border-color]="level()!.color + '55'">
+          <span class="level-num" [style.color]="level()!.color">{{ level()!.level }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Info -->
+    <div class="hero-info">
+      <p class="hero-eyebrow"><span class="eyebrow-dot"></span>Mi perfil</p>
+      <h1 class="hero-username">{{ profile().username }}</h1>
+      <p class="hero-name">{{ profile().firstName }} {{ profile().lastName }}</p>
+      @if (profile().bio) { <p class="hero-bio">"{{ profile().bio }}"</p> }
+      <a routerLink="/nav/profile/edit" class="edit-btn">
+        <i class="bi bi-pencil-fill"></i> Editar perfil
+      </a>
+    </div>
+
+    <!-- Pinned game portrait -->
+    @if (pinnedGame()) {
+      <div class="pinned-portrait-wrap">
+        <img [src]="portraitUrl" [alt]="pinnedGame()!.name" class="pinned-portrait"
+             (error)="$any($event.target).src = pinnedGame()!.image" />
+        <div class="pinned-label">
+          <i class="bi bi-pin-fill"></i> Juego favorito
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── Level card ───────────────────────────────────────────────────────── -->
+  @if (level()) {
+    <div class="level-section">
+      <div class="level-card">
+        <div class="lc-left">
+          <div class="lc-title-row">
+            <span class="lc-title-icon" [style.color]="level()!.color">
+              <i class="bi bi-shield-fill-check"></i>
+            </span>
+            <span class="lc-title">{{ level()!.title }}</span>
+            <span class="lc-level-num" [style.color]="level()!.color">Nivel {{ level()!.level }}</span>
+          </div>
+          <div class="lc-xp-row">
+            <span class="lc-xp-cur">{{ level()!.xpInLevel }} XP</span>
+            <span class="lc-xp-sep">/</span>
+            @if (level()!.level < 10) {
+              <span class="lc-xp-next">{{ level()!.xpForNext }} XP</span>
+            } @else {
+              <span class="lc-xp-next">MAX</span>
+            }
+          </div>
+          <div class="lc-bar-track">
+            <div class="lc-bar-fill" [style.width.%]="level()!.progress" [style.background]="level()!.color">
+              <span class="lc-bar-glow" [style.box-shadow]="'0 0 10px ' + level()!.color"></span>
+            </div>
+          </div>
+          <p class="lc-hint">
+            @if (level()!.level < 10) {
+              Consigue {{ Math.ceil((level()!.xpForNext - level()!.xpInLevel) / 10) }} logros para subir de nivel
+            } @else {
+              ¡Nivel máximo alcanzado! 🏆
+            }
+          </p>
+        </div>
+        <div class="lc-right">
+          <span class="lc-big-num" [style.color]="level()!.color">{{ level()!.level }}</span>
+          <span class="lc-total-xp">{{ level()!.xp }} XP total</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── Two column layout ────────────────────────────────────────────────── -->
+  <div class="bottom-grid">
+
+    <!-- Activity feed -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-icon"><i class="bi bi-activity"></i></span>
+        <h2 class="section-title">Actividad reciente</h2>
+      </div>
+
+      @if (loadingActivity()) {
+        <div class="mini-loading"><div class="mini-spinner"></div></div>
+      } @else if (activity().length === 0) {
+        <div class="section-empty">
+          <i class="bi bi-clock-history"></i>
+          <span>Sin actividad registrada. ¡Consigue logros para verlos aquí!</span>
+        </div>
+      } @else {
+        <div class="activity-list">
+          @for (entry of activity(); track entry.timestamp) {
+            <div class="activity-item">
+              <div class="ai-img-wrap">
+                <img [src]="'https://cdn.cloudflare.steamstatic.com/steam/apps/' + entry.gameId + '/header.jpg'"
+                     [alt]="entry.gameName" class="ai-img"
+                     (error)="$any($event.target).src = entry.gameImage" />
+              </div>
+              <div class="ai-info">
+                <span class="ai-achievement">{{ entry.achievementName }}</span>
+                <span class="ai-game">{{ entry.gameName }}</span>
+              </div>
+              <div class="ai-time">
+                <i class="bi bi-check-circle-fill ai-check"></i>
+                <span>{{ formatTime(entry.timestamp) }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Biblioteca con pin -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-icon section-icon--purple"><i class="bi bi-controller"></i></span>
+        <h2 class="section-title">Biblioteca</h2>
+        <span class="section-hint">Clic para marcar favorito</span>
+      </div>
+
+      @if (loadingGames()) {
+        <div class="mini-loading"><div class="mini-spinner"></div></div>
+      } @else if (games().length === 0) {
+        <div class="section-empty">
+          <i class="bi bi-controller"></i>
+          <span>Sin juegos en la biblioteca</span>
+        </div>
+      } @else {
+        <div class="games-pin-list">
+          @for (g of games(); track g.appId) {
+            <div class="gpl-row" [class.gpl-row--pinned]="pinnedId() === g.appId"
+                 (click)="pinGame(g.appId)">
+              <img [src]="'https://cdn.cloudflare.steamstatic.com/steam/apps/' + g.appId + '/header.jpg'"
+                   [alt]="g.name" class="gpl-img"
+                   (error)="$any($event.target).src = g.image" />
+              <div class="gpl-info">
+                <span class="gpl-name">{{ g.name }}</span>
+                <div class="gpl-bar-track">
+                  <div class="gpl-bar-fill" [style.width.%]="g.progreso"></div>
+                </div>
+                <span class="gpl-pct">{{ g.logrosConseguidos }}/{{ g.logrosTotales }}</span>
+              </div>
+              <div class="gpl-pin" [class.gpl-pin--active]="pinnedId() === g.appId">
+                <i class="bi" [class.bi-pin-fill]="pinnedId() === g.appId" [class.bi-pin]="pinnedId() !== g.appId"></i>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+  </div>
+
+  }
+</div>

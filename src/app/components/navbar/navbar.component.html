@@ -77,6 +77,13 @@
               <span class="link-indicator"></span>
             </a>
           </li>
+          <li *ngIf="userAuth!=null && userAuth.role == 'USER'">
+            <a routerLink="profile" routerLinkActive="active" class="nav-link-item">
+              <span class="link-icon"><i class="bi bi-person-fill"></i></span>
+              <span class="link-label">Mi perfil</span>
+              <span class="link-indicator"></span>
+            </a>
+          </li>
 
           <!-- ADMIN links -->
           <li *ngIf="userAuth!=null && userAuth.role == 'ADMIN'">
@@ -100,6 +107,15 @@
       <div class="side-divider"></div>
 
       <!-- User profile trigger -->
+      <!-- Notification bell -->
+      <button class="notif-bell-btn" *ngIf="userAuth?.role === 'USER'"
+              data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotifs">
+        <i class="bi bi-bell-fill"></i>
+        @if (notifService.unreadCount() > 0) {
+          <span class="notif-bell-badge">{{ notifService.unreadCount() > 9 ? '9+' : notifService.unreadCount() }}</span>
+        }
+      </button>
+
       <div class="user-profile-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasPerfil"
         aria-controls="offcanvasPerfil">
         <div class="user-avatar-wrap">
@@ -158,7 +174,7 @@
       }
       <span class="bnav-label">Amigos</span>
     </a>
-    <a href="#" class="bnav-item" data-bs-toggle="offcanvas" data-bs-target="#offcanvasPerfil">
+    <a routerLink="profile" routerLinkActive="active" class="bnav-item">
       <span class="bnav-icon">
         @if (userAuth?.photoURL) {
           <img [src]="userAuth.photoURL" alt="avatar" class="bnav-avatar" />
@@ -166,6 +182,9 @@
           <i class="bi bi-person-circle"></i>
         }
       </span>
+      @if (notifService.unreadCount() > 0) {
+        <span class="bnav-badge">{{ notifService.unreadCount() > 9 ? '9+' : notifService.unreadCount() }}</span>
+      }
       <span class="bnav-label">Perfil</span>
     </a>
   </nav>
@@ -189,6 +208,7 @@
 
 <!-- Toast -->
 <app-toast-insignia />
+<app-toast-notification />
 
 <!-- ═══════════════════════════════════════════
      OFFCANVAS — Perfil
@@ -257,5 +277,60 @@
       </div>
 
     </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     OFFCANVAS — Notificaciones
+═══════════════════════════════════════════ -->
+<div class="offcanvas offcanvas-bottom offcanvas-notifs"
+     tabindex="-1" id="offcanvasNotifs" aria-labelledby="offcanvasNotifsLabel">
+
+  <div class="offcanvas-header">
+    <div class="oc-title-row">
+      <h5 id="offcanvasNotifsLabel" class="oc-title text-white">Notificaciones</h5>
+      @if (notifService.unreadCount() > 0) {
+        <span class="oc-count oc-count--notif">{{ notifService.unreadCount() }}</span>
+      }
+    </div>
+    <button type="button" class="btn-close-custom" data-bs-dismiss="offcanvas"
+            (click)="markAllRead()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="offcanvas-body">
+    @if (notifService.notifications().length === 0) {
+      <div class="notif-empty">
+        <i class="bi bi-bell-slash"></i>
+        <span>Sin notificaciones</span>
+      </div>
+    } @else {
+      <div class="notif-list">
+        @for (n of notifService.notifications(); track n.id) {
+          <div class="notif-item" [class.notif-item--unread]="!n.read"
+               (click)="notifService.markRead(n.id)"
+               data-bs-dismiss="offcanvas">
+            <div class="notif-dot" [class.notif-dot--visible]="!n.read"></div>
+            <div class="notif-icon-wrap"
+                 [class.notif-icon-wrap--msg]="n.type === 'message'"
+                 [class.notif-icon-wrap--friend]="n.type === 'friend_accept'">
+              <i class="bi"
+                 [class.bi-chat-dots-fill]="n.type === 'message'"
+                 [class.bi-person-check-fill]="n.type === 'friend_accept'"></i>
+            </div>
+            <div class="notif-text">
+              <span class="notif-from">{{ n.fromUsername }}</span>
+              <span class="notif-body">
+                @if (n.type === 'message') { {{ n.text }} }
+                @else { Ha aceptado tu solicitud de amistad }
+              </span>
+            </div>
+            <span class="notif-time">{{ n.timestamp | date:'HH:mm' }}</span>
+          </div>
+        }
+      </div>
+    }
   </div>
 </div>

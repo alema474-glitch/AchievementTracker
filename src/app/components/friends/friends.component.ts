@@ -1,9 +1,9 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { FriendsService, Friend, FriendRequest } from '../../services/friends.service';
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, Subscription, combineLatest } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -12,42 +12,54 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   templateUrl: './friends.component.html',
   styleUrl: './friends.component.scss'
 })
-export class FriendsComponent implements OnInit {
+export class FriendsComponent implements OnInit, OnDestroy {
   private friendsService = inject(FriendsService);
 
-  activeTab = signal<'friends' | 'search' | 'requests'>('friends');
-  friends = signal<Friend[]>([]);
-  requests = signal<FriendRequest[]>([]);
-  searchResults = signal<any[]>([]);
-  searchQuery = signal('');
+  activeTab      = signal<'friends' | 'search' | 'requests'>('friends');
+  friends        = signal<Friend[]>([]);
+  requests       = signal<FriendRequest[]>([]);
+  searchResults  = signal<any[]>([]);
+  searchQuery    = signal('');
   loadingFriends = signal(true);
-  loadingSearch = signal(false);
-  sendingTo = signal<string>('');
-  sentTo = signal<Set<string>>(new Set());
+  loadingSearch  = signal(false);
+  sendingTo      = signal<string>('');
+  sentTo         = signal<Set<string>>(new Set());
+  unreadMap      = signal<Record<string, number>>({});
 
   private searchSubject = new Subject<string>();
+  private unreadSub?: Subscription;
 
   constructor() {
     this.searchSubject.pipe(
-      debounceTime(350),
-      distinctUntilChanged(),
-      switchMap(q => {
-        this.loadingSearch.set(true);
-        return this.friendsService.searchUsers(q);
-      }),
+      debounceTime(350), distinctUntilChanged(),
+      switchMap(q => { this.loadingSearch.set(true); return this.friendsService.searchUsers(q); }),
       takeUntilDestroyed()
-    ).subscribe(results => {
-      this.searchResults.set(results);
-      this.loadingSearch.set(false);
-    });
+    ).subscribe(results => { this.searchResults.set(results); this.loadingSearch.set(false); });
   }
 
   ngOnInit() {
     this.friendsService.getFriends().subscribe(f => {
       this.friends.set(f);
       this.loadingFriends.set(false);
+      this.subscribeUnread(f.map(fr => fr.uid));
     });
     this.friendsService.getIncomingRequests().subscribe(r => this.requests.set(r));
+  }
+
+  ngOnDestroy() { this.unreadSub?.unsubscribe(); }
+
+  private subscribeUnread(uids: string[]) {
+    this.unreadSub?.unsubscribe();
+    if (!uids.length) return;
+    this.unreadSub = combineLatest(
+      uids.map(uid => this.friendsService.getUnreadCount(uid).pipe(
+        switchMap(async count => ({ uid, count }))
+      ) as any)
+    ).subscribe((entries: any[]) => {
+      const map: Record<string, number> = {};
+      entries.forEach((e: any) => { map[e.uid] = e.count; });
+      this.unreadMap.set(map);
+    });
   }
 
   onSearch(q: string) {
@@ -60,31 +72,15 @@ export class FriendsComponent implements OnInit {
     this.sendingTo.set(uid);
     try {
       await this.friendsService.sendFriendRequest(uid, username);
-      const s = new Set(this.sentTo());
-      s.add(uid);
-      this.sentTo.set(s);
-    } finally {
-      this.sendingTo.set('');
-    }
+      const s = new Set(this.sentTo()); s.add(uid); this.sentTo.set(s);
+    } finally { this.sendingTo.set(''); }
   }
 
-  async acceptRequest(fromUid: string) {
-    await this.friendsService.acceptRequest(fromUid);
-  }
-
-  async rejectRequest(fromUid: string) {
-    await this.friendsService.rejectRequest(fromUid);
-  }
-
-  async removeFriend(uid: string) {
-    await this.friendsService.removeFriend(uid);
-  }
-
-  isFriend(uid: string): boolean {
-    return this.friends().some(f => f.uid === uid);
-  }
-
-  requestCount() {
-    return this.requests().length;
-  }
+  async acceptRequest(fromUid: string) { await this.friendsService.acceptRequest(fromUid); }
+  async rejectRequest(fromUid: string) { await this.friendsService.rejectRequest(fromUid); }
+  async removeFriend(uid: string) { await this.friendsService.removeFriend(uid); }
+  isFriend(uid: string): boolean { return this.friends().some(f => f.uid === uid); }
+  requestCount() { return this.requests().length; }
+  getUnread(uid: string): number { return this.unreadMap()[uid] ?? 0; }
+  totalUnread(): number { return Object.values(this.unreadMap()).reduce((a, b) => a + b, 0); }
 }

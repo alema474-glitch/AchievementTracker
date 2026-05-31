@@ -67,8 +67,11 @@
               <a [routerLink]="['/nav/friends/compare', friend.uid]" class="fc-btn fc-btn--compare">
                 <i class="bi bi-bar-chart-line-fill"></i>
               </a>
-              <a [routerLink]="['/nav/friends/chat', friend.uid]" class="fc-btn fc-btn--chat">
+              <a [routerLink]="['/nav/friends/chat', friend.uid]" class="fc-btn fc-btn--chat fc-btn--notif">
                 <i class="bi bi-chat-dots-fill"></i>
+                @if (getUnread(friend.uid) > 0) {
+                  <span class="fc-unread-badge">{{ getUnread(friend.uid) > 9 ? '9+' : getUnread(friend.uid) }}</span>
+                }
               </a>
               <button class="fc-btn fc-btn--remove" (click)="removeFriend(friend.uid)">
                 <i class="bi bi-person-dash-fill"></i>

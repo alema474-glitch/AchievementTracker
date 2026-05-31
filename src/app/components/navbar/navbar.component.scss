@@ -320,3 +320,88 @@
   i { font-size: 1rem; }
   &:hover { background: rgba(255,80,80,.08); border-color: rgba(255,80,80,.35); color: rgb(255,120,120); }
 }
+
+// ── Notification bell ─────────────────────────────────────────────────────────
+.notif-bell-btn {
+  position: relative; width: 38px; height: 38px;
+  background: var(--surface-2); border: 1px solid var(--border-soft);
+  border-radius: 50%; color: var(--fg-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .95rem; cursor: pointer; margin-bottom: 6px;
+  transition: background .2s, border-color .2s, color .2s;
+  &:hover { background: var(--accent-dim); border-color: var(--border); color: var(--accent-soft); }
+}
+.notif-bell-badge {
+  position: absolute; top: -4px; right: -4px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  background: var(--accent); color: #fff;
+  font-size: .58rem; font-weight: 700; border-radius: 99px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 8px var(--accent-glow);
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+// ── Notifications offcanvas ───────────────────────────────────────────────────
+.offcanvas-notifs {
+  background: var(--surface, rgb(24,24,24));
+  border-top: 1px solid var(--border-soft);
+  border-radius: 20px 20px 0 0;
+  height: 55vh;
+  &::before {
+    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: .3;
+  }
+  @media (max-width: 767px) { height: 70vh; }
+}
+
+.oc-icon--notif {
+  background: rgba(79,123,255,.08) !important;
+  border-color: rgba(79,123,255,.2) !important;
+  color: var(--accent-soft) !important;
+}
+.oc-count--notif {
+  background: var(--accent) !important; color: #fff !important;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.notif-empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px; padding: 50px 20px; text-align: center;
+  color: var(--fg-faint); font-size: .9rem;
+  i { font-size: 2rem; }
+}
+
+.notif-list { display: flex; flex-direction: column; gap: 6px; }
+.notif-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface-2); border: 1px solid var(--border-soft);
+  border-radius: 12px; cursor: pointer;
+  transition: background .2s, border-color .2s;
+  position: relative;
+  &:hover { background: var(--surface-3); border-color: var(--border); }
+  &--unread {
+    background: linear-gradient(135deg, rgba(79,123,255,.06), rgba(79,123,255,.02));
+    border-color: var(--border);
+  }
+}
+.notif-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: transparent; flex-shrink: 0;
+  &--visible { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
+}
+.notif-icon-wrap {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: .95rem;
+  &--msg    { background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.2); color: #34d399; }
+  &--friend { background: var(--accent-dim); border: 1px solid var(--border); color: var(--accent-soft); }
+}
+.notif-text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.notif-from { font-size: .88rem; font-weight: 700; color: var(--fg); }
+.notif-body {
+  font-size: .76rem; color: var(--fg-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.notif-time { font-size: .68rem; color: var(--fg-faint); flex-shrink: 0; }
