@@ -1,0 +1,207 @@
+<div class="challenges-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <p class="page-eyebrow"><span class="eyebrow-dot"></span>Competición</p>
+      <h1 class="page-title">Retos <span class="title-accent">Activos</span></h1>
+    </div>
+    <button class="new-challenge-btn" (click)="openModal()">
+      <i class="bi bi-lightning-charge-fill"></i>
+      <span>Nuevo reto</span>
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn" [class.active]="tab()==='received'" (click)="tab.set('received')">
+      <i class="bi bi-inbox-fill"></i> Recibidos
+      @if (received.length > 0) { <span class="tab-pill tab-pill--alert">{{ received.length }}</span> }
+    </button>
+    <button class="tab-btn" [class.active]="tab()==='sent'" (click)="tab.set('sent')">
+      <i class="bi bi-send-fill"></i> Enviados
+    </button>
+    <button class="tab-btn" [class.active]="tab()==='active'" (click)="tab.set('active')">
+      <i class="bi bi-lightning-charge-fill"></i> En curso
+      @if (active.length > 0) { <span class="tab-pill">{{ active.length }}</span> }
+    </button>
+    <button class="tab-btn" [class.active]="tab()==='history'" (click)="tab.set('history')">
+      <i class="bi bi-clock-history"></i> Historial
+    </button>
+  </div>
+
+  <!-- List -->
+  @if (loading()) {
+    <div class="loading-state"><div class="spinner-ring"></div><span>Cargando retos…</span></div>
+  } @else if (currentList().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon"><i class="bi bi-lightning-charge"></i></div>
+      <h3>Sin retos aquí</h3>
+      <p>Reta a un amigo para empezar la competición.</p>
+      @if (tab()==='received' || tab()==='sent') {
+        <button class="btn-empty-cta" (click)="openModal()">
+          <i class="bi bi-lightning-charge-fill"></i> Crear reto
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="challenge-list">
+      @for (c of currentList(); track c.id) {
+        <div class="challenge-card" [class.card--won]="isWon(c)" [class.card--lost]="isLost(c)">
+
+          <!-- Portrait thumbnail (2/3 ratio) -->
+          <div class="cc-portrait-wrap">
+            <img
+              [src]="'https://cdn.cloudflare.steamstatic.com/steam/apps/' + c.gameId + '/library_600x900.jpg'"
+              [alt]="c.gameName" class="cc-portrait"
+              (error)="$any($event.target).src = 'https://cdn.cloudflare.steamstatic.com/steam/apps/' + c.gameId + '/header.jpg'" />
+            <!-- Status badge over portrait — icon only -->
+            <span class="status-badge" [class]="badgeFor(c).cls">
+              <i class="bi" [class]="badgeFor(c).icon"></i>
+            </span>
+          </div>
+
+          <!-- Body -->
+          <div class="cc-body">
+
+            <div class="cc-header-row">
+              <span class="cc-game-name">{{ c.gameName }}</span>
+              <span class="cc-status-label" [class]="badgeFor(c).cls + '-text'">
+                <i class="bi" [class]="badgeFor(c).icon"></i>
+                @switch (c.status) {
+                  @case ('pending')  { Pendiente }
+                  @case ('active')   { En curso }
+                  @case ('won')      { Victoria }
+                  @case ('lost')     { Derrota }
+                  @default           { Rechazado }
+                }
+              </span>
+            </div>
+            <span class="cc-time-row">{{ relTime(c.createdAt) }}</span>
+
+            <div class="cc-achievement-row">
+              <i class="bi bi-lightning-charge-fill cc-lightning"></i>
+              <span class="cc-achievement">{{ c.achievementName }}</span>
+            </div>
+
+            <div class="cc-players">
+              <div class="cc-player-chip cc-player-chip--from">
+                <i class="bi bi-person-fill"></i>
+                <span>{{ c.fromUsername }}</span>
+              </div>
+              <span class="cc-vs">VS</span>
+              <div class="cc-player-chip cc-player-chip--to">
+                <i class="bi bi-person-fill"></i>
+                <span>{{ c.toUsername }}</span>
+              </div>
+            </div>
+
+            <!-- Actions (received pending) -->
+            @if (tab() === 'received' && c.status === 'pending') {
+              <div class="cc-actions">
+                <button class="cc-btn cc-btn--accept" (click)="accept(c)">
+                  <i class="bi bi-check-lg"></i> Aceptar
+                </button>
+                <button class="cc-btn cc-btn--decline" (click)="decline(c)">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            }
+
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     NEW CHALLENGE MODAL
+══════════════════════════════════════════ -->
+@if (showModal()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <span class="modal-icon"><i class="bi bi-lightning-charge-fill"></i></span>
+        <h2 class="modal-title">Nuevo Reto</h2>
+        <button class="modal-close" (click)="closeModal()"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <!-- Step 1: select friend -->
+      <div class="modal-step" [class.step-done]="selFriend()">
+        <p class="step-label"><span class="step-num">1</span> Elige un amigo</p>
+        <div class="friend-chips">
+          @for (f of friends(); track f.uid) {
+            <button class="friend-chip" [class.active]="selFriend()?.uid === f.uid"
+                    (click)="onSelectFriend(f)">
+              @if (f.photoURL) {
+                <img [src]="f.photoURL" [alt]="f.username" class="chip-avatar" />
+              } @else {
+                <span class="chip-avatar-ph"><i class="bi bi-person-fill"></i></span>
+              }
+              <span>{{ f.username }}</span>
+            </button>
+          }
+          @empty { <p class="no-friends">Sin amigos añadidos</p> }
+        </div>
+      </div>
+
+      <!-- Step 2: select game -->
+      @if (selFriend()) {
+        <div class="modal-step" [class.step-done]="selGame()">
+          <p class="step-label"><span class="step-num">2</span> Elige un juego</p>
+          <div class="game-chips">
+            @for (g of games(); track g.appId) {
+              <button class="game-chip" [class.active]="selGame()?.appId === g.appId"
+                      (click)="onSelectGame(g)">
+                <img [src]="'https://cdn.cloudflare.steamstatic.com/steam/apps/' + g.appId + '/library_600x900.jpg'"
+                     [alt]="g.name" class="gchip-img"
+                     (error)="$any($event.target).src = 'https://cdn.cloudflare.steamstatic.com/steam/apps/' + g.appId + '/header.jpg'" />
+                <span class="gchip-name">{{ g.name }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Step 3: select achievement -->
+      @if (selGame()) {
+        <div class="modal-step" [class.step-done]="selAch()">
+          <p class="step-label"><span class="step-num">3</span> Elige un logro pendiente</p>
+          @if (loadingAchs()) {
+            <div class="ach-loading"><div class="mini-spin"></div> Cargando logros…</div>
+          } @else if (achievements().length === 0) {
+            <p class="no-achs">¡Ya tienes todos los logros de este juego!</p>
+          } @else {
+            <div class="ach-list">
+              @for (a of achievements(); track a.id) {
+                <button class="ach-item" [class.active]="selAch()?.id === a.id"
+                        (click)="onSelectAch(a)">
+                  <span class="ach-check"><i class="bi bi-check-lg"></i></span>
+                  <span class="ach-name">{{ a.name }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Send button -->
+      @if (selFriend() && selGame() && selAch()) {
+        <div class="modal-footer">
+          <div class="challenge-preview">
+            <i class="bi bi-lightning-charge-fill cp-icon"></i>
+            <span>Retar a <strong>{{ selFriend()!.username }}</strong> por <strong>{{ selAch()!.name }}</strong></span>
+          </div>
+          <button class="send-challenge-btn" [disabled]="sending()" (click)="sendChallenge()">
+            @if (sending()) { <span class="btn-spin"></span> Enviando… }
+            @else { <i class="bi bi-send-fill"></i> Enviar reto }
+          </button>
+        </div>
+      }
+
+    </div>
+  </div>
+}

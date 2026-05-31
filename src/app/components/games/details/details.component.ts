@@ -6,6 +6,8 @@ import { Logros } from '../../../models/logros.module';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { JuegosServiceTsService } from '../../../services/juegos.service.ts.service';
+import { NotesService, AchievementNote } from '../../../services/notes.service';
+import { ChallengesService } from '../../../services/challenges.service';
 
 @Component({
   selector: 'app-details',
@@ -21,12 +23,18 @@ export class DetailsComponent implements OnInit {
   busqueda = '';
   heroImgError = false;
   togglingAll = false;
+  notes: Record<string, AchievementNote> = {};
+  editingNoteId: string | null = null;
+  noteText = '';
+  savingNote = false;
 
   constructor(
     private route: ActivatedRoute,
     private juegosService: JuegosServiceTsService,
     private achService: LogrosService,
-    private router: Router
+    private router: Router,
+    private notesService: NotesService,
+    private challengesService: ChallengesService
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +47,7 @@ export class DetailsComponent implements OnInit {
         this.achService.getAchievementsUser(appId).subscribe(data => {
           this.logrosUser = data;
         });
+        this.notesService.getNotes(appId).subscribe(n => this.notes = n);
       } else {
         this.volverAJuegos();
       }
@@ -110,6 +119,27 @@ export class DetailsComponent implements OnInit {
   setFiltro(f: 'todos' | 'conseguidos' | 'pendientes') { this.filtro = f; }
 
   // ── Actions ──────────────────────────────────────────────────────────────────
+  startEditNote(achId: string) {
+    this.editingNoteId = achId;
+    this.noteText = this.notes[achId]?.text ?? '';
+  }
+
+  cancelEditNote() { this.editingNoteId = null; this.noteText = ''; }
+
+  async saveNote() {
+    if (!this.juego || this.savingNote) return;
+    this.savingNote = true;
+    try {
+      await this.notesService.saveNote(this.juego.appId, this.editingNoteId!, this.noteText);
+      this.editingNoteId = null; this.noteText = '';
+    } finally { this.savingNote = false; }
+  }
+
+  async deleteNote(achId: string) {
+    if (!this.juego) return;
+    await this.notesService.deleteNote(this.juego.appId, achId);
+  }
+
   volverAJuegos() { this.router.navigate(['/nav/games']); }
 
   toggleLogro(logroItem: { achievement: Logros, conseguido: boolean }) {

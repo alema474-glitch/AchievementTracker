@@ -35,17 +35,26 @@ export class ToastNotificationComponent implements OnInit, OnDestroy {
     const n = this.toast();
     if (!n) return;
     this.dismiss();
-    if (n.type === 'message') this.router.navigate(['/nav/friends/chat', n.fromUid]);
+    if      (n.type === 'message')      this.router.navigate(['/nav/friends/chat', n.fromUid]);
     else if (n.type === 'friend_accept') this.router.navigate(['/nav/friends']);
+    else if (n.type === 'challenge')    this.router.navigate(['/nav/challenges']);
   }
 
   getIcon(type: string): string {
-    return type === 'message' ? 'bi-chat-dots-fill' : 'bi-person-check-fill';
+    if (type === 'message')      return 'bi-chat-dots-fill';
+    if (type === 'challenge')    return 'bi-lightning-charge-fill';
+    return 'bi-person-check-fill';
   }
+
   getLabel(type: string): string {
-    return type === 'message' ? 'Nuevo mensaje' : 'Solicitud aceptada';
+    if (type === 'message')      return 'Nuevo mensaje';
+    if (type === 'challenge')    return 'Nuevo reto';
+    return 'Solicitud aceptada';
   }
+
   getColor(type: string): string {
-    return type === 'message' ? '#34d399' : 'var(--accent-soft)';
+    if (type === 'message')   return '#34d399';
+    if (type === 'challenge') return '#f5c542';
+    return 'var(--accent-soft)';
   }
 }

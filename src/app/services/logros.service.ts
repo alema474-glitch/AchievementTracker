@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Database, ref, objectVal, remove, set, get } from '@angular/fire/database';
 import { Observable, map, of, switchMap } from 'rxjs';
 import { AuthService } from './auth.service';
+import { ChallengesService } from './challenges.service';
 import { Logros } from '../models/logros.module';
 
 export interface ActivityEntry {
@@ -16,7 +17,8 @@ export interface ActivityEntry {
 @Injectable({ providedIn: 'root' })
 export class LogrosService {
   private db   = inject(Database);
-  private auth = inject(AuthService);
+  private auth       = inject(AuthService);
+  private challenges = inject(ChallengesService);
 
   getAchievementsPorJuego(idJuego: string): Observable<Logros[]> {
     const achRef = ref(this.db, `/achievements/${idJuego}`);
@@ -55,6 +57,8 @@ export class LogrosService {
     await set(ref(this.db, `/activity/${uid}/${ts}_${idAchievement}`), {
       gameId: idJuego, achievementId: idAchievement, timestamp: ts
     });
+    // Check if achievement resolves any active challenge
+    await this.challenges.checkAndResolveChallenge(idAchievement, idJuego);
   }
 
   async removeAchievementUser(idJuego: string, idAchievement: string) {

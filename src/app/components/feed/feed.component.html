@@ -1,0 +1,107 @@
+<div class="feed-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <p class="page-eyebrow"><span class="eyebrow-dot"></span>Social</p>
+    <h1 class="page-title">Actividad de <span class="title-accent">Amigos</span></h1>
+  </div>
+
+  @if (loading()) {
+    <div class="feed-loading">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="skeleton-item">
+          <div class="sk-avatar"></div>
+          <div class="sk-lines">
+            <div class="sk-line sk-line--wide"></div>
+            <div class="sk-line sk-line--mid"></div>
+          </div>
+          <div class="sk-img"></div>
+        </div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="feed-empty">
+      <div class="empty-icon"><i class="bi bi-wifi-off"></i></div>
+      <h3>Error al cargar</h3>
+      <p>{{ error() }}</p>
+    </div>
+  } @else if (entries().length === 0) {
+    <div class="feed-empty">
+      <div class="empty-icon"><i class="bi bi-person-hearts"></i></div>
+      <h3>Nada por aquí</h3>
+      <p>Cuando tus amigos consigan logros, aparecerán aquí.</p>
+      <a routerLink="/nav/friends" class="btn-cta">
+        <i class="bi bi-people-fill"></i> Ver amigos
+      </a>
+    </div>
+  } @else {
+    <div class="feed-timeline">
+      @for (group of groupByDay(entries()); track group.date) {
+
+        <div class="day-group">
+          <div class="day-label">
+            <span class="day-line"></span>
+            <span class="day-text">{{ group.date }}</span>
+            <span class="day-line"></span>
+          </div>
+
+          @for (entry of group.items; track entry.timestamp + entry.uid) {
+            <div class="feed-card">
+
+              <!-- Timeline dot + line -->
+              <div class="tl-col">
+                <div class="tl-dot">
+                  <i class="bi bi-trophy-fill"></i>
+                </div>
+                <div class="tl-line"></div>
+              </div>
+
+              <!-- Content -->
+              <div class="feed-content">
+                <!-- User row -->
+                <div class="fc-user">
+                  <div class="fc-avatar">
+                    @if (entry.photoURL) {
+                      <img [src]="entry.photoURL" [alt]="entry.username" />
+                    } @else {
+                      <div class="fc-avatar-ph"><i class="bi bi-person-fill"></i></div>
+                    }
+                  </div>
+                  <div class="fc-user-info">
+                    <a [routerLink]="['/nav/friends/profile', entry.uid]" class="fc-username">
+                      {{ entry.username }}
+                    </a>
+                    <span class="fc-action">desbloqueó un logro</span>
+                  </div>
+                  <span class="fc-time">{{ relativeTime(entry.timestamp) }}</span>
+                </div>
+
+                <!-- Achievement card -->
+                <div class="achievement-block">
+                  <div class="ab-img-wrap">
+                    <img
+                      [src]="'https://cdn.cloudflare.steamstatic.com/steam/apps/' + entry.gameId + '/header.jpg'"
+                      [alt]="entry.gameName" class="ab-img"
+                      (error)="$any($event.target).src = entry.gameImage"
+                    />
+                    <div class="ab-img-overlay"></div>
+                  </div>
+                  <div class="ab-info">
+                    <div class="ab-trophy"><i class="bi bi-trophy-fill"></i></div>
+                    <div class="ab-texts">
+                      <span class="ab-achievement">{{ entry.achievementName }}</span>
+                      <span class="ab-game">{{ entry.gameName }}</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          }
+        </div>
+
+      }
+    </div>
+  }
+
+</div>

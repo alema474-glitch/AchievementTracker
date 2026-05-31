@@ -21,6 +21,8 @@ import { FriendProfileComponent } from './components/friends/friend-profile/frie
 import { CompareComponent } from './components/friends/compare/compare.component';
 import { RankingComponent } from './components/friends/ranking/ranking.component';
 import { ChatComponent } from './components/friends/chat/chat.component';
+import { FeedComponent } from './components/feed/feed.component';
+import { ChallengesComponent } from './components/challenges/challenges.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/welcome', pathMatch: 'full' },
@@ -43,6 +45,8 @@ export const routes: Routes = [
       { path: 'friends/compare/:uid',     component: CompareComponent,       canActivate: [roleGuard], data: { roles: ['USER'] } },
       { path: 'friends/ranking',          component: RankingComponent,       canActivate: [roleGuard], data: { roles: ['USER'] } },
       { path: 'friends/chat/:uid',        component: ChatComponent,          canActivate: [roleGuard], data: { roles: ['USER'] } },
+      { path: 'feed',                     component: FeedComponent,          canActivate: [roleGuard], data: { roles: ['USER'] } },
+      { path: 'challenges',               component: ChallengesComponent,    canActivate: [roleGuard], data: { roles: ['USER'] } },
 
       // ── Admin ────────────────────────────────────────────────────────────────
       { path: 'admin-games',     component: AdminGamesComponent,    canActivate: [roleGuard], data: { roles: ['ADMIN'] } },

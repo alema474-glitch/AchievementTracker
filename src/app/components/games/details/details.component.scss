@@ -609,3 +609,81 @@
   animation: spin .7s linear infinite;
   flex-shrink: 0;
 }
+
+// ── Note UI inside logro cards ────────────────────────────────────────────────
+.lc-right-actions {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+
+.lc-note-btn {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: transparent; border: 1px solid transparent;
+  color: var(--fg-faint); font-size: .85rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: color .2s, border-color .2s, background .2s, transform .15s;
+
+  &:hover {
+    color: #fbbf24; border-color: rgba(251,191,36,.3);
+    background: rgba(251,191,36,.06); transform: scale(1.1);
+  }
+  &--has {
+    color: #fbbf24; border-color: rgba(251,191,36,.25);
+    background: rgba(251,191,36,.06);
+  }
+}
+
+.lc-note-preview {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: .74rem; color: rgba(251,191,36,.7); font-style: italic;
+  cursor: pointer; line-height: 1.4; margin-top: 2px;
+  transition: color .2s;
+  i { flex-shrink: 0; font-size: .75rem; margin-top: 1px; }
+  &:hover { color: #fbbf24; }
+}
+
+.note-edit-wrap {
+  display: flex; flex-direction: column; gap: 8px; margin-top: 8px;
+  animation: fadeSlideUp .2s ease;
+}
+.note-textarea {
+  width: 100%; box-sizing: border-box;
+  background: rgba(18,18,18,.8); border: 1px solid rgba(251,191,36,.25);
+  border-radius: 8px; color: var(--fg);
+  font-family: 'DM Sans', sans-serif; font-size: .84rem; line-height: 1.4;
+  padding: 8px 10px; outline: none; resize: none;
+  transition: border-color .2s, box-shadow .2s;
+  &::placeholder { color: var(--fg-faint); font-style: italic; }
+  &:focus {
+    border-color: rgba(251,191,36,.5);
+    box-shadow: 0 0 0 3px rgba(251,191,36,.1);
+  }
+}
+.note-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.note-save-btn {
+  display: flex; align-items: center; gap: 6px; padding: 6px 14px;
+  background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.3);
+  border-radius: 8px; color: #fbbf24;
+  font-family: 'DM Sans', sans-serif; font-size: .76rem; font-weight: 600; cursor: pointer;
+  transition: all .2s;
+  &:hover:not(:disabled) { background: rgba(251,191,36,.2); }
+  &:disabled { opacity: .5; cursor: not-allowed; }
+}
+.note-del-btn {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: rgba(255,80,80,.07); border: 1px solid rgba(255,80,80,.15);
+  color: rgb(255,110,110); cursor: pointer; font-size: .8rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+  &:hover { background: rgba(255,80,80,.15); }
+}
+.note-cancel-btn {
+  background: transparent; border: none; color: var(--fg-faint);
+  font-family: 'DM Sans', sans-serif; font-size: .76rem; cursor: pointer; padding: 6px;
+  transition: color .2s;
+  &:hover { color: var(--fg-muted); }
+}
+.note-spin {
+  width: 12px; height: 12px; border: 2px solid rgba(251,191,36,.3);
+  border-top-color: #fbbf24; border-radius: 50%;
+  animation: spin .7s linear infinite; display: inline-block;
+}

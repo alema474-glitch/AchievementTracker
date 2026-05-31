@@ -405,3 +405,10 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .notif-time { font-size: .68rem; color: var(--fg-faint); flex-shrink: 0; }
+
+// Challenge notification icon variant
+.notif-icon-wrap--challenge {
+  background: rgba(245,197,66,.1) !important;
+  border: 1px solid rgba(245,197,66,.2) !important;
+  color: #f5c542 !important;
+}

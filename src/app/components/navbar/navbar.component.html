@@ -78,6 +78,20 @@
             </a>
           </li>
           <li *ngIf="userAuth!=null && userAuth.role == 'USER'">
+            <a routerLink="feed" routerLinkActive="active" class="nav-link-item">
+              <span class="link-icon"><i class="bi bi-rss-fill"></i></span>
+              <span class="link-label">Actividad</span>
+              <span class="link-indicator"></span>
+            </a>
+          </li>
+          <li *ngIf="userAuth!=null && userAuth.role == 'USER'">
+            <a routerLink="challenges" routerLinkActive="active" class="nav-link-item">
+              <span class="link-icon"><i class="bi bi-lightning-charge-fill"></i></span>
+              <span class="link-label">Retos</span>
+              <span class="link-indicator"></span>
+            </a>
+          </li>
+          <li *ngIf="userAuth!=null && userAuth.role == 'USER'">
             <a routerLink="profile" routerLinkActive="active" class="nav-link-item">
               <span class="link-icon"><i class="bi bi-person-fill"></i></span>
               <span class="link-label">Mi perfil</span>
@@ -289,7 +303,7 @@
 
   <div class="offcanvas-header">
     <div class="oc-title-row">
-      <h5 id="offcanvasNotifsLabel" class="oc-title text-white">Notificaciones</h5>
+      <h5 id="offcanvasNotifsLabel" class="oc-title">Notificaciones</h5>
       @if (notifService.unreadCount() > 0) {
         <span class="oc-count oc-count--notif">{{ notifService.unreadCount() }}</span>
       }
@@ -315,10 +329,12 @@
             <div class="notif-dot" [class.notif-dot--visible]="!n.read"></div>
             <div class="notif-icon-wrap"
                  [class.notif-icon-wrap--msg]="n.type === 'message'"
-                 [class.notif-icon-wrap--friend]="n.type === 'friend_accept'">
+                 [class.notif-icon-wrap--friend]="n.type === 'friend_accept'"
+                 [class.notif-icon-wrap--challenge]="n.type === 'challenge'">
               <i class="bi"
                  [class.bi-chat-dots-fill]="n.type === 'message'"
-                 [class.bi-person-check-fill]="n.type === 'friend_accept'"></i>
+                 [class.bi-person-check-fill]="n.type === 'friend_accept'"
+                 [class.bi-lightning-charge-fill]="n.type === 'challenge'"></i>
             </div>
             <div class="notif-text">
               <span class="notif-from">{{ n.fromUsername }}</span>

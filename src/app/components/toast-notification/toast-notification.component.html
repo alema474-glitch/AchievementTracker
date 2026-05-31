@@ -1,6 +1,10 @@
 @if (toast(); as n) {
-  <div class="toast-notif" [class.toast-notif--msg]="n.type === 'message'" (click)="navigate()">
-    <div class="tn-progress"></div>
+  <div class="toast-notif"
+       [class.toast-notif--msg]="n.type === 'message'"
+       [class.toast-notif--challenge]="n.type === 'challenge'"
+       (click)="navigate()">
+
+    <div class="tn-progress" [class.tn-progress--challenge]="n.type === 'challenge'"></div>
 
     <div class="tn-eyebrow">
       <i class="bi tn-type-icon" [class]="getIcon(n.type)" [style.color]="getColor(n.type)"></i>
@@ -11,12 +15,14 @@
     </div>
 
     <div class="tn-body">
-      <div class="tn-avatar">
-        <i class="bi bi-person-fill"></i>
+      <div class="tn-avatar" [class.tn-avatar--challenge]="n.type === 'challenge'">
+        <i class="bi" [class]="getIcon(n.type)" [style.color]="getColor(n.type)"></i>
       </div>
       <div class="tn-text">
         <span class="tn-from">{{ n.fromUsername }}</span>
         @if (n.type === 'message' && n.text) {
+          <span class="tn-preview">{{ n.text }}</span>
+        } @else if (n.type === 'challenge' && n.text) {
           <span class="tn-preview">{{ n.text }}</span>
         } @else {
           <span class="tn-preview">Ha aceptado tu solicitud de amistad</span>

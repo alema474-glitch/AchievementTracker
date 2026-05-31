@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 
 export interface AppNotification {
   id: string;
-  type: 'message' | 'friend_accept';
+  type: 'message' | 'friend_accept' | 'challenge';
   fromUid: string;
   fromUsername: string;
   text?: string;       // for messages
@@ -96,6 +96,17 @@ export class NotificationsService {
     const nRef = ref(db, `/notifications/${toUid}/${Date.now()}_accept_${fromUid}`);
     await set(nRef, {
       type: 'friend_accept', fromUid, fromUsername,
+      timestamp: Date.now(), read: false
+    });
+  }
+  static async pushChallengeNotification(
+    db: Database, toUid: string,
+    fromUid: string, fromUsername: string, achievementName: string
+  ) {
+    const nRef = ref(db, `/notifications/${toUid}/${Date.now()}_challenge_${fromUid}`);
+    await set(nRef, {
+      type: 'challenge', fromUid, fromUsername,
+      text: `Te reta a conseguir: ${achievementName}`,
       timestamp: Date.now(), read: false
     });
   }

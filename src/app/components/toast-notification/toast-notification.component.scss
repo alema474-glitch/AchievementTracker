@@ -86,3 +86,17 @@
 }
 .tn-arrow { color: var(--fg-faint); font-size: .85rem; flex-shrink: 0; transition: transform .2s; }
 .toast-notif:hover .tn-arrow { transform: translateX(3px); color: var(--fg-muted); }
+
+// ── Challenge variant ─────────────────────────────────────────────────────────
+.toast-notif--challenge {
+  &::before {
+    background: linear-gradient(90deg, transparent, rgba(245,197,66,.4), transparent);
+  }
+}
+.tn-progress--challenge {
+  background: linear-gradient(90deg, #f5c542, #fde68a) !important;
+}
+.tn-avatar--challenge {
+  background: linear-gradient(135deg, rgba(245,197,66,.15), rgba(245,197,66,.05)) !important;
+  border-color: rgba(245,197,66,.2) !important;
+}
