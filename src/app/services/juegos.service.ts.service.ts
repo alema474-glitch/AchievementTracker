@@ -87,4 +87,15 @@ export class JuegosServiceTsService {
     if (!uid) return;
     await remove(ref(this.database, `/library/${uid}/hidden/${appId}`));
   }
+
+  async removeGameFromLibrary(appId: string): Promise<void> {
+    const uid = this.auth.getUid();
+    if (!uid) return;
+    // Remove from library entry, hidden entry, and user achievements
+    await remove(ref(this.database, `/library/${uid}/games/${appId}`));
+    await remove(ref(this.database, `/library/${uid}/hidden/${appId}`));
+    await remove(ref(this.database, `/achievementsUser/${uid}/${appId}`));
+    await remove(ref(this.database, `/activity/${uid}`));
+    await remove(ref(this.database, `/notes/${uid}/${appId}`));
+  }
 }

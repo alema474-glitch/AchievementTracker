@@ -687,3 +687,31 @@
   border-top-color: #fbbf24; border-radius: 50%;
   animation: spin .7s linear infinite; display: inline-block;
 }
+
+// ── Delete from library ───────────────────────────────────────────────────────
+.hero-top-right { display: flex; align-items: center; gap: 8px; }
+
+.delete-game-btn {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,80,80,.08); border: 1px solid rgba(255,80,80,.2);
+  border-radius: 99px; padding: 9px 16px;
+  color: rgba(255,120,120,.8); font-family: 'DM Sans', sans-serif;
+  font-size: .82rem; font-weight: 500; cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: background .2s, border-color .2s, color .2s, box-shadow .2s;
+  i { font-size: .85rem; }
+  &:hover:not(:disabled) {
+    background: rgba(255,80,80,.18);
+    border-color: rgba(255,80,80,.45);
+    color: rgb(255,130,130);
+    box-shadow: 0 0 16px rgba(255,80,80,.15);
+  }
+  &:disabled { opacity: .45; cursor: not-allowed; }
+  @media (max-width: 480px) { span { display: none; } padding: 9px 10px; }
+}
+
+.dg-spin {
+  width: 12px; height: 12px;
+  border: 2px solid rgba(255,120,120,.3); border-top-color: rgb(255,120,120);
+  border-radius: 50%; animation: spin .7s linear infinite; display: inline-block;
+}

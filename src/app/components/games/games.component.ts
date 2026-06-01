@@ -147,6 +147,19 @@ export class GamesComponent implements OnInit {
     this.hiddenIds = new Set(this.hiddenIds); // trigger change detection
   }
 
+  removingId = signal<string>('');
+
+  async removeGame(j: JuegoEnriquecido) {
+    if (this.removingId()) return;
+    this.removingId.set(j.appId);
+    try {
+      await this.juegosService.removeGameFromLibrary(j.appId);
+      this.juegosTotal = this.juegosTotal.filter(g => g.appId !== j.appId);
+    } finally {
+      this.removingId.set('');
+    }
+  }
+
   mostrarTexto(event: Event) {
     this.busqueda = (event.target as HTMLInputElement).value;
   }

@@ -103,6 +103,18 @@
           <i class="bi" [class.bi-eye-slash-fill]="!hiddenIds.has(juego.appId)"
                         [class.bi-eye-fill]="hiddenIds.has(juego.appId)"></i>
         </button>
+
+        <!-- Delete btn -->
+        <button class="delete-btn"
+                (click)="$event.stopPropagation(); removeGame(juego)"
+                [disabled]="removingId() === juego.appId"
+                title="Eliminar de biblioteca">
+          @if (removingId() === juego.appId) {
+            <span class="delete-spin"></span>
+          } @else {
+            <i class="bi bi-trash3-fill"></i>
+          }
+        </button>
       </div>
 
       <div class="game-body">

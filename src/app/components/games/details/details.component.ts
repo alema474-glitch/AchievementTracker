@@ -34,7 +34,7 @@ export class DetailsComponent implements OnInit {
     private achService: LogrosService,
     private router: Router,
     private notesService: NotesService,
-    private challengesService: ChallengesService
+    private challengesService: ChallengesService,
   ) {}
 
   ngOnInit(): void {
@@ -138,6 +138,19 @@ export class DetailsComponent implements OnInit {
   async deleteNote(achId: string) {
     if (!this.juego) return;
     await this.notesService.deleteNote(this.juego.appId, achId);
+  }
+
+  removingGame = false;
+
+  async removeGame() {
+    if (!this.juego || this.removingGame) return;
+    this.removingGame = true;
+    try {
+      await this.juegosService.removeGameFromLibrary(this.juego.appId);
+      this.router.navigate(['/nav/games']);
+    } finally {
+      this.removingGame = false;
+    }
   }
 
   volverAJuegos() { this.router.navigate(['/nav/games']); }
