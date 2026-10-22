@@ -1,67 +1,75 @@
-# ProyectoFinalDAM
+# Achievement Tracker
 
-Proyecto orientado en el uso de Angular junto a Bootstrap.
+Multiplatform (web + Android) video game achievement tracker. Final degree project (TFG) for the Higher Vocational Diploma in Multiplatform Application Development (DAM), repository name `ProyectoFinalDAM`.
 
-El proyecto consiste en una aplicación multiplataforma(web/android) donde diferentes usuarios registrarán o "marcarán" como completados los logros que contiene los diferentes juegos de la BBDD de Firebase, así como administrar sus juegos, conseguir insignias por diferentes desbloqueos, etc...
+**Live demo:** https://achievementtracker-klie.onrender.com
 
-Este está estructurado por componentes, donde se puede encontrar un welcome, login, etc... junto al inicio, que es un nav con el diferente contenido incrustado en el resto de pantalla disponible.
+## About the project
 
-El uso de SCSS está orientado mayoritariamente al uso de colores personalizados, animaciones o algún uso de medida exaxta necesaria.
+Users register ("mark") the achievements they complete in the different games stored in the Firebase database, manage their own game library, earn badges for different unlocks and compete with friends. The same product is available as an Angular web application and as a native Android application built in Java.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
+The Angular app is organised by components: a welcome screen and login, followed by the main area, where a navigation bar embeds each section in the rest of the available screen. SCSS is used mainly for custom colours, animations and the few places where exact measurements are required.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **Achievement tracking:** mark achievements as completed per game, with per-achievement notes.
+- **Game library:** manage your games and see your progress in each one.
+- **Progression:** badges for different unlocks, plus an XP and level system.
+- **Challenges:** challenge system between users.
+- **Social:** friends, user profiles, comparison between users, ranking and real-time chat.
+- **Notifications:** toast notifications for the relevant events.
+- **UX:** onboarding modal, custom 404 page and route transition animations.
+- **Security:** protected routes using a role guard (`roleGuard`) backed by `AuthService`.
+
+## Tech stack
+
+| Layer | Technologies |
+| --- | --- |
+| Web frontend | Angular (standalone components, signals), `@angular/fire`, Bootstrap, SCSS, TypeScript |
+| Android | Native app in Java |
+| Backend | Node.js with TypeScript, Steam Web API integration |
+| Database | Firebase Realtime Database |
+
+## Deployment
+
+The backend is deployed on [Render](https://render.com) and starts automatically when it receives a request, so the first request after a period of inactivity may take longer to respond. Only the site administrators make requests to it.
+
+## Getting started (web)
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
+
+Install the dependencies:
+
+```bash
+npm install
+```
+
+Start a local development server:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open `http://localhost:4200/` in your browser. The application reloads automatically when you change any source file.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Build
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The build artifacts are stored in the `dist/` directory. By default, the production build is optimised for performance and speed.
 
-## Running unit tests
+## Tests
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Unit tests run with [Karma](https://karma-runner.github.io):
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+Usability was also validated through hallway testing with three real users.
 
-For end-to-end (e2e) testing, run:
+## Additional resources
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli)
